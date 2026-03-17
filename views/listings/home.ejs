@@ -1,0 +1,226 @@
+<% layout("/layouts/boilerplateHome") %>
+<main>
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 hero-content">
+          <h1 class="hero-title mb-4 animate-fade-in-up">Welcome to RoomWati</h1>
+          <p class="hero-subtitle lead mb-4 animate-fade-in-up delay-1">
+            Find unique places to stay and create unforgettable memories
+          </p>
+
+          <div class="animate-fade-in-up delay-1 hero-buttons">
+            <a href="/listings" class="btn-primary btn-lg me-2">See all listings</a>
+            <a href="/login" class="btn-outline btn-lg me-2">Sign in</a>
+            <a href="/signup" class="btn-outline btn-lg">Register</a>
+          </div>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block animate-fade-in-up delay-2">
+          <div id="heroCarousel" class="carousel slide rounded-4" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+              <button
+                type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="0"
+                class="active"
+              ></button>
+              <button
+                type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="1"
+              ></button>
+              <button
+                type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="2"
+              ></button>
+              <button
+                type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="3"
+              ></button>
+              <button
+                type="button"
+                data-bs-target="#heroCarousel"
+                data-bs-slide-to="4"
+              ></button>
+            </div>
+            <div class="carousel-inner">
+              <div class="carousel-item active" data-bs-interval="3000">
+                <img
+                  src="https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=2128&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  class="d-block w-100 img-fluid"
+                  alt="Mountain cabin"
+                />
+              </div>
+              <div class="carousel-item" data-bs-interval="3000">
+                <img
+                  src="https://a0.muscache.com/im/ml/photo_enhancement/pictures/9f50b008-d3cc-46ca-9ce9-22ace968b1f8.jpg?im_w=1440"
+                  class="d-block w-100 img-fluid"
+                  alt="Beach villa"
+                />
+              </div>
+              <div class="carousel-item" data-bs-interval="3000">
+                <img
+                  src="https://a0.muscache.com/im/pictures/81dca5d6-5a86-49bc-8eca-4a8610a07d27.jpg?im_w=1440"
+                  class="d-block w-100 img-fluid"
+                  alt="City apartment"
+                />
+              </div>
+              <div class="carousel-item" data-bs-interval="3000">
+                <img
+                  src="https://a0.muscache.com/im/ml/photo_enhancement/pictures/miso/Hosting-990107274204637127/original/67921aa9-44fe-4913-ab38-d486f3f30ae0.jpeg?im_w=1200"
+                  class="d-block w-100 img-fluid"
+                  alt="Desert oasis"
+                />
+              </div>
+              <div class="carousel-item" data-bs-interval="3000">
+                <img
+                  src="https://a0.muscache.com/im/ml/photo_enhancement/pictures/miso/Hosting-35746251/original/3953eeb5-0e49-426b-8967-f0236cc64cf3.jpeg?im_w=1200"
+                  class="d-block w-100 img-fluid"
+                  alt="Lakeside cottage"
+                />
+              </div>
+            </div>
+            <button
+              class="carousel-control-prev"
+              type="button"
+              data-bs-target="#heroCarousel"
+              data-bs-slide="prev"
+            >
+              <span
+                class="carousel-control-prev-icon"
+                aria-hidden="true"
+              ></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button
+              class="carousel-control-next"
+              type="button"
+              data-bs-target="#heroCarousel"
+              data-bs-slide="next"
+            >
+              <span
+                class="carousel-control-next-icon"
+                aria-hidden="true"
+              ></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section">
+    <div class="container">
+      <h2 class="about-title animate-fade-in-up">Why Choose RoomWati?</h2>
+      <div class="row">
+        <div class="col-md-4 mb-4 animate-fade-in-up delay-1">
+          <div class="about-card">
+            <div class="about-card-content">
+              <div class="about-card-icon">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <h3 class="about-card-title">Unique Destinations</h3>
+              <p>
+                Discover one-of-a-kind places to stay, from cozy cabins to
+                luxury villas and everything in between.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4 animate-fade-in-up delay-2">
+          <div class="about-card">
+            <div class="about-card-content">
+              <div class="about-card-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <h3 class="about-card-title">Trusted by Travelers</h3>
+              <p>
+                Join thousands of satisfied guests who have found their perfect
+                accommodations through RoomWati.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4 animate-fade-in-up delay-3">
+          <div class="about-card">
+            <div class="about-card-content">
+              <div class="about-card-icon">
+                <i class="fas fa-heart"></i>
+              </div>
+              <h3 class="about-card-title">Memorable Experiences</h3>
+              <p>
+                Create lasting memories with authentic experiences and
+                personalized stays around the world.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonial Section -->
+  <section class="testimonial-section">
+    <div class="container">
+      <h2 class="testimonial-title animate-fade-in-up">What Our Guests Say</h2>
+      <div class="row">
+        <div class="col-md-6 mb-4 animate-fade-in-up delay-1">
+          <div class="testimonial-card">
+            <p class="testimonial-text">
+              "We found the perfect cabin for our anniversary through
+              RoomWati. The views were breathtaking and the experience was
+              unforgettable!"
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-author-image">
+                <img src="/images/isha.jpg" alt="Isha" />
+              </div>
+              <div>
+                <div class="testimonial-author-name">Isha Dhall</div>
+                <div class="testimonial-author-location">New York, USA</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4 animate-fade-in-up delay-2">
+          <div class="testimonial-card">
+            <p class="testimonial-text">
+              "RoomWati made finding our family vacation home so easy. The
+              place was exactly as described and the host was amazing!"
+            </p>
+            <div class="testimonial-author">
+              <div class="testimonial-author-image">
+                <img src="/images/nakul.jpg" alt="Michael" />
+              </div>
+              <div>
+                <div class="testimonial-author-name">Nakul John</div>
+                <div class="testimonial-author-location">London, UK</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="cta-title animate-fade-in-up">
+        Ready to find your perfect stay?
+      </h2>
+      <p class="cta-subtitle animate-fade-in-up delay-1">
+        Browse our curated selection of unique accommodations and start your
+        journey today.
+      </p>
+      <div class="animate-fade-in-up delay-2">
+        <a href="/listings" class="btn-primary">Explore all listings</a>
+      </div>
+    </div>
+  </section>
+</main>

@@ -1,0 +1,1272 @@
+<nav class="navbar navbar-expand-md border-bottom sticky-top glassmorphism">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/listings/home">
+      <img src="/images/roomwatiLogo.png" alt="Logo" class="brand-icon" />
+    </a>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+      <div class="search-bar">
+        <i class="fa-solid fa-search search-icon"></i>
+        <input
+          type="text"
+          placeholder="Search destinations..."
+          class="search-input"
+        />
+        <div class="search-divider"></div>
+        <div class="search-filter">
+          <span>Anywhere</span>
+          <div class="search-divider"></div>
+          <span>Any week</span>
+          <div class="search-divider"></div>
+          <span>Add guests</span>
+          <button class="search-button">
+            <i class="fa-solid fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="navbar-toggler custom-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <div class="hamburger-icon">
+        <span class="line line-1"></span>
+        <span class="line line-2"></span>
+        <span class="line line-3"></span>
+      </div>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      <div class="navbar-nav">
+        <a class="nav-link" href="/listings/home">Home</a>
+        <a class="nav-link" href="/listings">All Listings</a>
+        <a class="nav-link" href="/listings/new">Add new Listings</a>
+      </div>
+      <div class="navbar-nav ms-auto align-items-center auth-section">
+        <% if(!currUser) { %>
+        <a class="nav-link btn-login" href="/login">Login</a>
+        <a class="nav-link btn-register" href="/signup">Register</a>
+        <%} %>
+        <div class="dropdown">
+          <% if(currUser) { %>
+          <a
+            class="nav-link dropdown-toggle user-profile-icon"
+            href="#"
+            role="button"
+            data-bs-toggle="dropdown"
+          >
+            <div class="user-avatar">
+              <img
+                src="<%= currUser.image.url %>"
+                alt="User profile"
+                class="rounded-circle border"
+                id="navbar-profile-image"
+              />
+            </div>
+          </a>
+          <%} %>
+          <ul class="dropdown-menu dropdown-menu-end glassmorphism-menu">
+            <li>
+              <a class="dropdown-item" href="/profile"
+                ><i class="fas fa-user-circle"></i> My Profile</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="/listings/new"
+                ><i class="fas fa-plus-circle"></i> New Listing</a
+              >
+            </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+              <a class="dropdown-item" href="/logout"
+                ><i class="fas fa-sign-out-alt"></i> Logout</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<style>
+  /* Base navbar styling */
+  .navbar {
+    padding: 0;
+  }
+
+  .brand-icon {
+    height: 52px; /* adjust as needed */
+    width: 52px;
+    transition: transform 0.3s ease; /* smooth animation */
+  }
+
+  .brand-icon:hover {
+    transform: scale(1.2); /* thoda bada ho jaayega */
+  }
+
+  .container-fluid {
+    padding: 0 24px;
+  }
+
+  /* Glassmorphism effect for navbar */
+  .glassmorphism {
+    position: sticky;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Brand icon styling */
+  .navbar-brand {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    margin-right: 24px;
+  }
+
+  /* Glassmorphism for dropdown menu */
+  .glassmorphism-menu {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 12px;
+    padding: 10px;
+    margin-top: 12px;
+    min-width: 200px;
+  }
+
+  .dropdown-item {
+    padding: 10px 16px;
+    transition: all 0.25s ease;
+    border-radius: 8px;
+    margin: 2px 0;
+    font-weight: 500;
+  }
+
+  .dropdown-item:hover {
+    background: rgba(211, 3, 55, 0.08);
+    color: #d30337;
+    transform: translateX(3px);
+  }
+
+  .dropdown-divider {
+    margin: 8px 0;
+    opacity: 0.1;
+  }
+
+  /* Auth section styling */
+  .auth-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn-login,
+  .btn-register {
+    font-weight: 600;
+    transition: all 0.25s ease;
+  }
+
+  .btn-login {
+    color: #555;
+  }
+
+  .btn-login:hover {
+    color: #d30337;
+  }
+
+  .btn-register {
+    background-color: #d30337;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 24px;
+    box-shadow: 0 2px 8px rgba(211, 3, 55, 0.2);
+  }
+
+  .btn-register:hover {
+    background-color: #b8032e;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(211, 3, 55, 0.3);
+  }
+
+  /* User avatar styling */
+  .user-avatar {
+    width: 44px;
+    height: 44px;
+    overflow: hidden;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid white;
+    transition: all 0.3s ease;
+  }
+
+  .user-avatar:hover {
+    box-shadow: 0 3px 12px rgba(211, 3, 55, 0.15);
+    transform: scale(1.05);
+  }
+
+  .user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Hamburger menu */
+  .custom-toggler {
+    border: none;
+    background: transparent;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+  }
+
+  .custom-toggler:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  .custom-toggler:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  .hamburger-icon {
+    width: 22px;
+    height: 18px;
+    position: relative;
+  }
+
+  .line {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-color: #333;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .line-1 {
+    top: 0;
+  }
+
+  .line-2 {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .line-3 {
+    bottom: 0;
+  }
+
+  /* Cross animation */
+  .custom-toggler[aria-expanded="true"] .line-1 {
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    background-color: #d30337;
+  }
+
+  .custom-toggler[aria-expanded="true"] .line-2 {
+    opacity: 0;
+  }
+
+  .custom-toggler[aria-expanded="true"] .line-3 {
+    bottom: 50%;
+    transform: translateY(50%) rotate(-45deg);
+    background-color: #d30337;
+  }
+
+  /* Nav link animations */
+  .navbar-nav:not(.auth-section) {
+    margin-left: 20px;
+  }
+
+  .nav-link {
+    position: relative;
+    padding: 8px 16px;
+    margin: 0 4px;
+    color: #444;
+    font-weight: 500;
+    transition: all 0.25s ease;
+    border-radius: 24px;
+  }
+
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 4px;
+    left: 50%;
+    background-color: #d30337;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+
+  .nav-link:hover {
+    color: #d30337;
+    background-color: rgba(211, 3, 55, 0.05);
+  }
+
+  .nav-link:hover::after {
+    width: 70%;
+    opacity: 1;
+  }
+
+  /* Fix dropdown toggle arrow */
+  .dropdown-toggle::after {
+    display: none;
+  }
+
+  /* Airbnb-inspired Search Bar */
+  .search-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    transition: all 0.3s ease;
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 40px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    padding: 6px 6px 6px 20px;
+    height: 54px;
+    width: 100%;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .search-bar:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+  }
+
+  .search-icon {
+    color: #d30337;
+    margin-right: 12px;
+    font-size: 16px;
+  }
+
+  .search-input {
+    border: none;
+    padding: 8px 0;
+    flex-grow: 1;
+    font-size: 15px;
+    outline: none;
+    color: #333;
+    transition: all 0.3s ease;
+  }
+
+  .search-input::placeholder {
+    color: #777;
+    transition: color 0.3s ease;
+  }
+
+  .search-input:focus::placeholder {
+    color: #aaa;
+  }
+
+  .search-filter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .search-filter span {
+    padding: 0 10px;
+  }
+
+  .search-divider {
+    height: 28px;
+    width: 1px;
+    background-color: #e5e5e5;
+    margin: 0 4px;
+  }
+
+  .search-button {
+    background: linear-gradient(135deg, #d30337, #b8032e);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    height: 42px;
+    width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(211, 3, 55, 0.2);
+  }
+
+  .search-button:hover {
+    background: linear-gradient(135deg, #e4033c, #c5032f);
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(211, 3, 55, 0.3);
+  }
+
+  /* Shrinking Animation */
+  .navbar.scrolled {
+    height: 65px;
+  }
+
+  .navbar.scrolled .search-bar {
+    height: 48px;
+    padding: 4px 4px 4px 16px;
+  }
+
+  .navbar.scrolled .search-filter {
+    font-size: 13px;
+  }
+
+  .navbar.scrolled .search-button {
+    height: 38px;
+    width: 38px;
+  }
+
+  .navbar.scrolled .brand-icon {
+    font-size: 24px;
+  }
+
+  .navbar.scrolled .user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Search suggestions styling */
+  .search-suggestions {
+    position: absolute;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    max-height: 420px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    display: none;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 16px 0;
+    overflow-x: hidden;
+  }
+
+  .suggestion-category {
+    font-size: 13px;
+    color: #888;
+    font-weight: 600;
+    padding: 8px 20px 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 10px;
+  }
+
+  .suggestion-category:first-child {
+    margin-top: 0;
+  }
+
+  .suggestion-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s ease;
+  }
+
+  .suggestion-item:hover {
+    background-color: rgba(211, 3, 55, 0.05);
+  }
+
+  .suggestion-item i {
+    margin-right: 12px;
+    color: #777;
+    width: 18px;
+    text-align: center;
+  }
+
+  .suggestion-item .highlight {
+    font-weight: 600;
+    color: #d30337;
+    background-color: rgba(211, 3, 55, 0.08);
+    padding: 1px 3px;
+    border-radius: 4px;
+  }
+
+  .no-suggestions {
+    padding: 20px;
+    text-align: center;
+    color: #888;
+  }
+
+  .no-suggestions i {
+    margin-right: 8px;
+  }
+
+  /* Search results message styling */
+  .search-results-message {
+    background-color: white;
+    padding: 14px 20px;
+    margin: 16px 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .search-results-message i {
+    color: #d30337;
+    margin-right: 10px;
+  }
+
+  .clear-search-btn {
+    background-color: rgba(211, 3, 55, 0.08);
+    color: #d30337;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .clear-search-btn:hover {
+    background-color: rgba(211, 3, 55, 0.15);
+    transform: translateX(2px);
+  }
+
+  .clear-search-btn i {
+    margin-left: 6px;
+    margin-right: 0;
+  }
+
+  /* Mobile responsive adjustments */
+  @media (max-width: 767.98px) {
+    .container-fluid {
+      padding: 0 16px;
+    }
+
+    .navbar-collapse {
+      position: fixed;
+      top: 80px;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 0 0 20px 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out, opacity 0.3s ease;
+      opacity: 0;
+      padding: 0;
+      z-index: 1030;
+    }
+
+    .navbar-collapse.show {
+      max-height: calc(100vh - 80px);
+      opacity: 1;
+      padding: 24px 20px;
+      overflow-y: auto;
+    }
+
+    /* Mobile navbar layout */
+    .navbar-nav:not(.auth-section) {
+      text-align: center;
+      margin: 0 0 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .navbar-nav:not(.auth-section) .nav-link {
+      padding: 14px;
+      font-size: 16px;
+      display: block;
+      margin: 0;
+      background-color: rgba(0, 0, 0, 0.02);
+      border-radius: 12px;
+    }
+
+    .navbar-nav:not(.auth-section) .nav-link:hover {
+      background-color: rgba(211, 3, 55, 0.05);
+    }
+
+    /* Auth section goes horizontal at the bottom */
+    .auth-section {
+      flex-direction: row;
+      justify-content: center;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      padding-top: 24px;
+      margin-top: 10px;
+    }
+
+    .btn-login,
+    .btn-register {
+      width: 50%;
+      text-align: center;
+      margin: 0 5px;
+    }
+
+    .btn-register {
+      padding: 10px 16px;
+    }
+
+    /* Mobile search adjustments */
+    .search-container {
+      position: fixed;
+      top: 90px;
+      left: 16px;
+      right: 16px;
+      width: calc(100% - 32px);
+      max-width: none;
+      margin: 0;
+      z-index: 1040;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .navbar-collapse.show + .search-container,
+    .show-mobile-search .search-container {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+
+    .search-bar {
+      height: 48px;
+      padding: 4px 4px 4px 16px;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .search-filter span:nth-child(3),
+    .search-filter span:nth-child(5) {
+      display: none;
+    }
+
+    .search-filter .search-divider:nth-child(4) {
+      display: none;
+    }
+
+    /* Mobile menu button position */
+    .navbar-toggler {
+      margin-left: auto;
+    }
+
+    /* Fix avatar display on mobile */
+    .dropdown {
+      position: static;
+    }
+
+    .dropdown-menu {
+      width: calc(100% - 40px);
+      left: 20px;
+      right: 20px;
+      margin: 0 auto;
+      top: auto !important;
+      transform: none !important;
+    }
+
+    .user-profile-icon {
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Mobile search suggestions */
+    .search-suggestions {
+      top: 60px;
+      max-height: 70vh;
+    }
+  }
+
+  /* Tablet adjustments */
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    .search-container {
+      max-width: 320px;
+    }
+
+    .search-filter span {
+      font-size: 12px;
+      padding: 0 5px;
+    }
+
+    .search-filter span:nth-child(5) {
+      display: none;
+    }
+
+    .search-filter .search-divider:nth-child(4) {
+      display: none;
+    }
+
+    .nav-link {
+      padding: 8px 12px;
+      margin: 0 2px;
+    }
+  }
+</style>
+<script>
+  // DOM Elements
+  const searchInput = document.querySelector(".search-input");
+  const searchBar = document.querySelector(".search-bar");
+  const searchButton = document.querySelector(".search-button");
+
+  // Create suggestion container
+  const suggestionsContainer = document.createElement("div");
+  suggestionsContainer.className = "search-suggestions";
+  searchBar.parentNode.appendChild(suggestionsContainer);
+
+  // Get actual listings data from the server
+  let actualListings = [];
+
+  // Function to fetch listings data from server
+  async function fetchListings() {
+    try {
+      const response = await fetch("/listings/data");
+      const data = await response.json();
+      actualListings = data;
+      return data;
+    } catch (error) {
+      console.error("Error fetching listings:", error);
+      // Fallback to empty array if fetch fails
+      return [];
+    }
+  }
+
+  // Initialize data
+  fetchListings();
+
+  // Extract locations and other searchable categories from listings
+  function extractSearchCategories(listings) {
+    const locations = new Set();
+    const countries = new Set();
+
+    listings.forEach((listing) => {
+      if (listing.location) locations.add(listing.location);
+      if (listing.country) countries.add(listing.country);
+    });
+
+    return {
+      locations: Array.from(locations),
+      countries: Array.from(countries),
+    };
+  }
+
+  // Recent searches - stored in localStorage
+  let recentSearches = JSON.parse(localStorage.getItem("recentSearches")) || [];
+
+  // Create categories for suggestions
+  const suggestionCategories = [
+    { name: "Recent Searches", items: () => recentSearches.slice(0, 5) },
+    {
+      name: "Popular Locations",
+      items: () => {
+        const categories = extractSearchCategories(actualListings);
+        return categories.locations.slice(0, 8);
+      },
+    },
+    {
+      name: "Countries",
+      items: () => {
+        const categories = extractSearchCategories(actualListings);
+        return categories.countries.slice(0, 6);
+      },
+    },
+    {
+      name: "Available Listings",
+      items: () => actualListings.map((listing) => listing.title).slice(0, 5),
+    },
+  ];
+
+  // Function to show suggestions
+  function showSuggestions() {
+    // Clear previous suggestions
+    suggestionsContainer.innerHTML = "";
+
+    // Get current search text
+    const searchText = searchInput.value.toLowerCase().trim();
+
+    // Don't show suggestions if search field is empty and not focused
+    if (!searchText && !searchInput.matches(":focus")) {
+      suggestionsContainer.style.display = "none";
+      return;
+    }
+
+    // Show suggestions container
+    suggestionsContainer.style.display = "block";
+
+    // Filter categories based on search text
+    let hasResults = false;
+
+    suggestionCategories.forEach((category) => {
+      // Get filtered items
+      const filteredItems = searchText
+        ? category
+            .items()
+            .filter((item) => item && item.toLowerCase().includes(searchText))
+        : category.items();
+
+      // Skip if no results for this category
+      if (!filteredItems || filteredItems.length === 0) return;
+
+      hasResults = true;
+
+      // Create category header
+      const categoryHeader = document.createElement("div");
+      categoryHeader.className = "suggestion-category";
+      categoryHeader.textContent = category.name;
+      suggestionsContainer.appendChild(categoryHeader);
+
+      // Create items
+      filteredItems.forEach((item) => {
+        if (!item) return; // Skip null or undefined items
+
+        const suggestionItem = document.createElement("div");
+        suggestionItem.className = "suggestion-item";
+
+        // Determine icon based on category
+        let icon;
+        if (category.name === "Recent Searches") {
+          icon = '<i class="fas fa-history"></i>';
+        } else if (category.name === "Popular Locations") {
+          icon = '<i class="fas fa-map-marker-alt"></i>';
+        } else if (category.name === "Countries") {
+          icon = '<i class="fas fa-globe"></i>';
+        } else if (category.name === "Available Listings") {
+          icon = '<i class="fas fa-home"></i>';
+        }
+
+        // Highlight matching text
+        let itemText = item;
+        if (searchText) {
+          const regex = new RegExp(`(${searchText})`, "gi");
+          itemText = item.replace(regex, '<span class="highlight">$1</span>');
+        }
+
+        suggestionItem.innerHTML = `${icon} ${itemText}`;
+
+        // Add click event to suggestion
+        suggestionItem.addEventListener("click", () => {
+          searchInput.value = item;
+          addToRecentSearches(item);
+          suggestionsContainer.style.display = "none";
+          performSearch(item);
+        });
+
+        suggestionsContainer.appendChild(suggestionItem);
+      });
+    });
+
+    // If no results found
+    if (!hasResults) {
+      const noResults = document.createElement("div");
+      noResults.className = "no-suggestions";
+      noResults.innerHTML =
+        '<i class="fas fa-search"></i> No results found for "' +
+        searchText +
+        '"';
+      suggestionsContainer.appendChild(noResults);
+    }
+  }
+
+  // Function to add item to recent searches
+  function addToRecentSearches(item) {
+    // Remove item if it already exists
+    recentSearches = recentSearches.filter((search) => search !== item);
+
+    // Add item to the beginning of the array
+    recentSearches.unshift(item);
+
+    // Limit to 10 recent searches
+    if (recentSearches.length > 10) {
+      recentSearches = recentSearches.slice(0, 10);
+    }
+
+    // Save to localStorage
+    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+  }
+
+  // Function to perform search
+  function performSearch(query) {
+    // Convert query to lowercase for case-insensitive matching
+    const searchTerm = query.toLowerCase().trim();
+
+    // Search through listings
+    const filteredListings = actualListings.filter((listing) => {
+      return (
+        (listing.title && listing.title.toLowerCase().includes(searchTerm)) ||
+        (listing.location &&
+          listing.location.toLowerCase().includes(searchTerm)) ||
+        (listing.country &&
+          listing.country.toLowerCase().includes(searchTerm)) ||
+        (listing.description &&
+          listing.description.toLowerCase().includes(searchTerm))
+      );
+    });
+
+    // Create search results message
+    const searchResultsMsg = document.createElement("div");
+    searchResultsMsg.className = "search-results-message";
+    searchResultsMsg.innerHTML = `
+    <div><i class="fas fa-search"></i> ${filteredListings.length} results found for "${query}"</div>
+    <button class="clear-search-btn">Clear search <i class="fas fa-times"></i></button>
+  `;
+
+    // Get or create the container for search results
+    let resultsContainer = document.querySelector("#search-results-container");
+    if (!resultsContainer) {
+      resultsContainer = document.createElement("div");
+      resultsContainer.id = "search-results-container";
+      resultsContainer.className = "container mt-4";
+
+      // Insert after navbar or at the beginning of main content
+      const main = document.querySelector("main");
+      if (main) {
+        main.prepend(resultsContainer);
+      } else {
+        const navbar = document.querySelector(".navbar");
+        navbar.parentNode.insertBefore(resultsContainer, navbar.nextSibling);
+      }
+    }
+
+    // Clear previous results
+    resultsContainer.innerHTML = "";
+    resultsContainer.appendChild(searchResultsMsg);
+
+    // If no results found
+    if (filteredListings.length === 0) {
+      const noResults = document.createElement("div");
+      noResults.className = "text-center my-5 py-5";
+      noResults.innerHTML = `
+      <i class="fas fa-search fa-3x text-muted mb-3"></i>
+      <h3 class="text-muted">No listings found matching "${query}"</h3>
+      <p class="text-muted">Try adjusting your search or exploring our featured listings below</p>
+      <a href="/listings" class="btn btn-outline-primary mt-3">View All Listings</a>
+    `;
+      resultsContainer.appendChild(noResults);
+    } else {
+      // Create a row for results
+      const resultsRow = document.createElement("div");
+      resultsRow.className = "row gy-4";
+
+      // Render each listing
+      filteredListings.forEach((listing) => {
+        const card = createListingCard(listing);
+        resultsRow.appendChild(card);
+      });
+
+      resultsContainer.appendChild(resultsRow);
+    }
+
+    // Add click event to clear search button
+    const clearBtn = searchResultsMsg.querySelector(".clear-search-btn");
+    clearBtn.addEventListener("click", clearSearch);
+
+    // Scroll to results
+    resultsContainer.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // Function to create a listing card
+  function createListingCard(listing) {
+    const col = document.createElement("div");
+    col.className = "col-12 col-md-6 col-lg-4";
+
+    const cardHtml = `
+    <div class="card h-100 listing-card shadow-sm">
+      <div class="card-img-wrapper">
+        <img src="${
+          listing.image || "/img/default-listing.jpg"
+        }" class="card-img-top" alt="${listing.title}">
+        ${
+          listing.isFeatured
+            ? '<span class="featured-badge"><i class="fas fa-star"></i> Featured</span>'
+            : ""
+        }
+      </div>
+      <div class="card-body">
+        <h5 class="card-title">${listing.title}</h5>
+        <div class="location mb-2">
+          <i class="fas fa-map-marker-alt text-muted me-1"></i>
+          <span class="text-muted">${listing.location}${
+      listing.country ? ", " + listing.country : ""
+    }</span>
+        </div>
+        <p class="card-text">${
+          listing.description
+            ? listing.description.substring(0, 100) + "..."
+            : "No description available"
+        }</p>
+        <div class="price-container mt-3">
+          <span class="price">${
+            listing.price ? "$" + listing.price : "Price on request"
+          }</span>
+          ${
+            listing.pricePerNight
+              ? '<span class="price-suffix">/ night</span>'
+              : ""
+          }
+        </div>
+      </div>
+      <div class="card-footer bg-white">
+        <a href="/listings/${
+          listing._id
+        }" class="btn btn-sm btn-outline-primary">View Details</a>
+        <div class="rating-container">
+          <i class="fas fa-star text-warning"></i>
+          <span>${listing.rating || "4.5"}</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+    col.innerHTML = cardHtml;
+    return col;
+  }
+
+  // Function to clear search
+  function clearSearch() {
+    // Clear search input
+    searchInput.value = "";
+
+    // Remove search results
+    const resultsContainer = document.querySelector(
+      "#search-results-container"
+    );
+    if (resultsContainer) {
+      resultsContainer.innerHTML = "";
+      resultsContainer.style.display = "none";
+    }
+
+    // Hide suggestions
+    suggestionsContainer.style.display = "none";
+
+    // Show original content (if applicable)
+    const originalContent = document.querySelector("#original-content");
+    if (originalContent) {
+      originalContent.style.display = "block";
+    }
+  }
+
+  // Event listeners
+  searchInput.addEventListener("input", showSuggestions);
+  searchInput.addEventListener("focus", showSuggestions);
+
+  // Close suggestions when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!searchBar.contains(e.target)) {
+      suggestionsContainer.style.display = "none";
+    }
+  });
+
+  // Handle search button click
+  searchButton.addEventListener("click", () => {
+    const query = searchInput.value.trim();
+    if (query) {
+      addToRecentSearches(query);
+      performSearch(query);
+    }
+  });
+
+  // Handle form submission
+  searchBar.closest("form")?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const query = searchInput.value.trim();
+    if (query) {
+      addToRecentSearches(query);
+      performSearch(query);
+    }
+  });
+
+  // Handle Enter key press
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (query) {
+        addToRecentSearches(query);
+        performSearch(query);
+        suggestionsContainer.style.display = "none";
+      }
+    }
+  });
+
+  // Navbar scroll animation
+  window.addEventListener("scroll", () => {
+    const navbar = document.querySelector(".navbar");
+    if (window.scrollY > 50) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");
+    }
+  });
+
+  // Show search mobile button - for mobile responsiveness
+  if (window.innerWidth < 768) {
+    const mobileSearchBtn = document.createElement("button");
+    mobileSearchBtn.className =
+      "mobile-search-btn btn btn-sm btn-outline-primary d-md-none";
+    mobileSearchBtn.innerHTML = '<i class="fas fa-search"></i>';
+
+    // Insert before the hamburger menu
+    const hamburger = document.querySelector(".navbar-toggler");
+    hamburger.parentNode.insertBefore(mobileSearchBtn, hamburger);
+
+    // Toggle search bar on mobile
+    mobileSearchBtn.addEventListener("click", () => {
+      document.body.classList.toggle("show-mobile-search");
+      if (document.body.classList.contains("show-mobile-search")) {
+        searchInput.focus();
+      }
+    });
+  }
+
+  // Initialize the search functionality
+  document.addEventListener("DOMContentLoaded", () => {
+    // Fetch initial data
+    fetchListings();
+
+    // Add some CSS for elements that might be dynamically added
+    const dynamicStyles = document.createElement("style");
+    dynamicStyles.textContent = `
+    .listing-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border-radius: 12px;
+      overflow: hidden;
+      border: none;
+    }
+    
+    .listing-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .card-img-wrapper {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .card-img-top {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    
+    .listing-card:hover .card-img-top {
+      transform: scale(1.05);
+    }
+    
+    .featured-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(211, 3, 55, 0.9);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .price-container {
+      display: flex;
+      align-items: baseline;
+    }
+    
+    .price {
+      font-size: 18px;
+      font-weight: 600;
+      color: #d30337;
+    }
+    
+    .price-suffix {
+      font-size: 14px;
+      color: #777;
+      margin-left: 4px;
+    }
+    
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .rating-container {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .mobile-search-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex; 
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      background-color: rgba(211, 3, 55, 0.08);
+      color: #d30337;
+      border: none;
+    }
+    
+    @media (max-width: 767.98px) {
+      .show-mobile-search .search-container {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: all;
+        z-index: 2000;
+      }
+    }
+  `;
+
+    document.head.appendChild(dynamicStyles);
+  });
+</script>

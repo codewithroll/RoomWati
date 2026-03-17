@@ -1,0 +1,284 @@
+<%- layout("/layouts/boilerplate") %>
+<div class="auth-container">
+  <div class="auth-form-container">
+    <div class="auth-header">
+      <h2>Verify Your Email</h2>
+      <p>We've sent a 6-digit verification code to <strong><%= email %></strong></p>
+      <p class="text-muted">Please check your email and enter the code below</p>
+    </div>
+
+    <form id="otpForm" class="airbnb-form">
+      <input type="hidden" name="email" value="<%= email %>">
+      <input type="hidden" name="isPasswordReset" value="<%= isPasswordReset || false %>">
+      
+      <div class="form-group">
+        <label for="otp">Verification Code</label>
+        <div class="otp-input-container">
+          <input 
+            type="text" 
+            name="otp" 
+            id="otp" 
+            class="form-control text-center otp-input" 
+            maxlength="6"
+            pattern="\d{6}"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            required
+          />
+        </div>
+        <div class="text-center mt-2">
+          <a href="#" id="resendOtp" class="text-primary">Resend Code</a>
+          <span id="resendTimer" class="text-muted ms-2">(2:00)</span>
+        </div>
+      </div>
+
+      <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+      
+      <button type="submit" class="airbnb-submit-btn w-100">
+        <span class="spinner-border spinner-border-sm d-none" id="otpSpinner" role="status" aria-hidden="true"></span>
+        <span id="otpButtonText">Verify & Continue</span>
+      </button>
+      
+      <div class="text-center mt-3">
+        <a href="/login" class="text-muted">Back to Login</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/js/email-service.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const otpForm = document.getElementById('otpForm');
+    const otpInput = document.getElementById('otp');
+    const resendLink = document.getElementById('resendOtp');
+    const resendTimer = document.getElementById('resendTimer');
+    const errorMessage = document.getElementById('errorMessage');
+    const otpSpinner = document.getElementById('otpSpinner');
+    const otpButtonText = document.getElementById('otpButtonText');
+    
+    let countdown = 120; // 2 minutes in seconds
+    let countdownInterval;
+    
+    // Format time as MM:SS
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+    
+    // Start the countdown
+    function startCountdown() {
+      clearInterval(countdownInterval);
+      countdown = 120;
+      updateResendButton();
+      
+      countdownInterval = setInterval(() => {
+        countdown--;
+        updateResendButton();
+        
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+    }
+    
+    // Update the resend button state
+    function updateResendButton() {
+      if (countdown > 0) {
+        resendLink.classList.add('disabled');
+        resendLink.style.pointerEvents = 'none';
+        resendTimer.textContent = `(${formatTime(countdown)})`;
+      } else {
+        resendLink.classList.remove('disabled');
+        resendLink.style.pointerEvents = 'auto';
+        resendTimer.textContent = '';
+      }
+    }
+    
+    // Handle OTP form submission
+    otpForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(otpForm);
+      const email = formData.get('email');
+      const otp = formData.get('otp');
+      const isPasswordReset = formData.get('isPasswordReset') === 'true';
+      
+      // Show loading state
+      otpSpinner.classList.remove('d-none');
+      otpButtonText.textContent = 'Verifying...';
+      
+      try {
+        // Verify OTP
+        const verification = await fetch('/auth/verify-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, otp, isPasswordReset })
+        });
+        
+        const result = await verification.json();
+        
+        if (result.success) {
+          if (isPasswordReset) {
+            // Redirect to password reset page
+            window.location.href = `/reset-password?token=${encodeURIComponent(result.token)}`;
+          } else {
+            // Continue with login
+            window.location.href = result.redirectTo || '/listings';
+          }
+        } else {
+          showError(result.message || 'Invalid verification code. Please try again.');
+        }
+      } catch (error) {
+        console.error('Verification error:', error);
+        showError('An error occurred. Please try again.');
+      } finally {
+        // Reset loading state
+        otpSpinner.classList.add('d-none');
+        otpButtonText.textContent = 'Verify & Continue';
+      }
+    });
+    
+    // Handle resend OTP
+    resendLink.addEventListener('click', async function(e) {
+      e.preventDefault();
+      if (countdown > 0) return;
+      const email = document.querySelector('input[name="email"]').value;
+      const isPasswordReset = document.querySelector('input[name="isPasswordReset"]').value === 'true';
+      try {
+        const response = await fetch('/auth/resend-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, purpose: isPasswordReset ? 'password reset' : 'login' })
+        });
+        const result = await response.json();
+        if (result.success) {
+          startCountdown();
+          showSuccess('A new verification code has been sent to your email.');
+        } else {
+          showError(result.message || 'Failed to resend verification code. Please try again.');
+        }
+      } catch (error) {
+        console.error('Resend OTP error:', error);
+        showError('An error occurred. Please try again.');
+      }
+    });
+    
+    // Auto-advance OTP input
+    otpInput.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '');
+      
+      if (this.value.length === 6) {
+        otpForm.dispatchEvent(new Event('submit'));
+      }
+    });
+    
+    // Helper functions
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.classList.remove('d-none');
+      setTimeout(() => {
+        errorMessage.classList.add('d-none');
+      }, 5000);
+    }
+    
+    function showSuccess(message) {
+      const successDiv = document.createElement('div');
+      successDiv.className = 'alert alert-success';
+      successDiv.textContent = message;
+      otpForm.insertBefore(successDiv, otpForm.firstChild);
+      
+      setTimeout(() => {
+        successDiv.remove();
+      }, 5000);
+    }
+    
+    // Initialize
+    startCountdown();
+  });
+</script>
+
+<style>
+  .otp-input-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .otp-input {
+    font-size: 24px;
+    letter-spacing: 8px;
+    width: 200px;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  #resendOtp {
+    text-decoration: none;
+  }
+  
+  #resendOtp.disabled {
+    color: #6c757d;
+    cursor: not-allowed;
+    text-decoration: none;
+  }
+  
+  .auth-form-container {
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .auth-header h2 {
+    margin-bottom: 10px;
+    color: #222;
+    font-weight: 600;
+  }
+  
+  .auth-header p {
+    color: #666;
+    margin-bottom: 5px;
+  }
+  
+  .text-muted {
+    color: #6c757d !important;
+  }
+  
+  .text-primary {
+    color: #007bff !important;
+  }
+  
+  .alert {
+    border-radius: 8px;
+    margin-bottom: 20px;
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+  
+  .alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+  }
+  
+  .alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+  }
+  
+  .spinner-border {
+    margin-right: 8px;
+  }
+</style>

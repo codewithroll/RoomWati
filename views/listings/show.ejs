@@ -1,0 +1,1227 @@
+<% layout("/layouts/boilerplate",{ listing: listing }) %>
+<link rel="stylesheet" href="/css/style.css" />
+<div class="container mt-4">
+  <!-- Listing Header Section -->
+  <div class="listing-header">
+    <h1 class="listing-title"><%= listing.title %></h1>
+    <div class="listing-subheader">
+      <div class="listing-rating">
+        <i class="fas fa-star"></i>
+        <% if(listing.reviews.length > 0) { %> 
+          <% let avgRating = 0; %> 
+          <% listing.reviews.forEach(review => { avgRating += review.rating }); %> 
+          <% avgRating = (avgRating / listing.reviews.length).toFixed(1); %>
+          <span><%= avgRating %></span>
+        <% } else { %>
+          <span>New</span>
+        <% } %>
+        <span class="reviews-count">
+          • <%= listing.reviews.length %> review<%= listing.reviews.length !== 1 ? 's' : '' %>
+        </span>
+        
+        <!-- View and Favorite Counts -->
+        <span class="listing-stats">
+          <span class="stat-item">
+            <i class="fas fa-eye"></i> <span class="view-count"><%= listing.viewCount || 0 %></span> views
+          </span>
+          <span class="stat-item">
+            <i class="fas fa-heart"></i> 
+            <span class="favorite-count" 
+                  data-initial-favorite-count="<%= Math.max(0, listing.favoriteCount || 0) %>"
+                  data-listing-id="<%= listing._id %>">
+              <%= Math.max(0, listing.favoriteCount || 0) %>
+            </span> favorites
+          </span>
+        </span>
+      </div>
+      <span class="listing-location">
+        <i class="fas fa-map-marker-alt"></i>
+        <%= listing.location %>, <%= listing.country %>
+      </span>
+    </div>
+  </div>
+  <!-- Image Carousel -->
+  <div class="listing-gallery">
+    <div class="main-image-container">
+      <div class="image-carousel">
+        <div class="carousel-inner">
+          <!-- Main image -->
+          <img
+            src="<%= listing.image.url %>"
+            class="carousel-img active"
+            alt="<%= listing.title %>"
+          />
+      <!-- Additional images if available -->
+      <% if(listing.images && listing.images.length > 0) { %> <%
+      listing.images.forEach((img, index) => { %>
+      <img
+        src="<%= img.url %>"
+        class="carousel-img"
+        alt="<%= listing.title %> - image <%= index + 2 %>"
+      />
+      <% }) %> <% } %>
+    </div>
+
+    <!-- Carousel Navigation Dots -->
+    <div class="carousel-dots">
+      <span class="dot active" data-index="0"></span>
+      <% if(listing.images && listing.images.length > 0) { %> <%
+      listing.images.forEach((img, index) => { %>
+      <span class="dot" data-index="<%= index + 1 %>"></span>
+      <% }) %> <% } %>
+    </div>
+
+    <!-- Carousel Controls -->
+    <div class="carousel-controls">
+      <button class="carousel-control prev" aria-label="Previous image">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="carousel-control next" aria-label="Next image">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Favorite Button -->
+    <% if(currentUser) { %>
+      <button
+        class="favorite-btn <%= currentUser.favorites && currentUser.favorites.includes(listing._id.toString()) ? 'active' : '' %>"
+        aria-label="Toggle favorites"
+        data-listing-id="<%= listing._id %>"
+      >
+        <i class="<%= currentUser.favorites && currentUser.favorites.includes(listing._id.toString()) ? 'fas' : 'far' %> fa-heart"></i>
+      </button>
+    <% } else { %>
+      <a href="/login" class="favorite-btn" title="Login to add to favorites">
+        <i class="far fa-heart"></i>
+      </a>
+    <% } %>
+  </div>
+</div>
+  </div>
+  <!-- Listing Details Section -->
+  <div class="row mt-4 listing-details-container">
+    <div class="col-lg-8 col-md-12 listing-details">
+      <div class="listing-description-container">
+        <div class="owner flex mb-3 align-items-center">
+          <div class="testimonial-author-image me-3">
+            <img 
+              src="<%= listing.owner.image.url || 'https://cdn.pixabay.com/photo/2018/11/13/22/01/avatar-3814081_1280.png' %>" 
+              alt="<%= listing.owner.username %>'s profile picture" 
+              class="rounded-circle"
+              style="width: 50px; height: 50px; object-fit: cover;"
+            />
+          </div>
+          <h4 class="mb-0 d-flex align-items-center">Hosted by <i class="mx-1"><%= listing.owner.username %></i>
+            <span class="verified-badge" title="Verified User">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.3 5.3L9 15.6l-4.3-4.3-1.4 1.4 5.7 5.7 11.7-11.7z" />
+              </svg>
+            </span>
+          </h4>
+        </div>
+
+    <!-- Room Type, Furnished Status, Gender Preference Tags - Enhanced -->
+    <div class="property-highlights mb-4">
+      <h4 class="section-title">
+        <i class="fas fa-home section-icon"></i>
+        Property Highlights
+      </h4>
+      <div class="highlights-container">
+        <% if(listing.roomType) { %>
+        <div class="highlight-item">
+          <div class="highlight-icon">
+            <i class="fas fa-bed"></i>
+          </div>
+          <div class="highlight-details">
+            <div class="highlight-label">Room Type</div>
+            <div class="highlight-value"><%= listing.roomType.charAt(0).toUpperCase() + listing.roomType.slice(1) %></div>
+          </div>
+        </div>
+        <% } %>
+        
+        <% if(listing.furnished) { %>
+        <div class="highlight-item">
+          <div class="highlight-icon">
+            <i class="fas fa-couch"></i>
+          </div>
+          <div class="highlight-details">
+            <div class="highlight-label">Furnishing</div>
+            <div class="highlight-value"><%= listing.furnished.charAt(0).toUpperCase() + listing.furnished.slice(1) %></div>
+          </div>
+        </div>
+        <% } %>
+        
+        <% if(listing.genderPreference && listing.genderPreference !== 'any') { %>
+        <div class="highlight-item">
+          <div class="highlight-icon">
+            <i class="fas fa-venus-mars"></i>
+          </div>
+          <div class="highlight-details">
+            <div class="highlight-label">Gender Preference</div>
+            <div class="highlight-value"><%= listing.genderPreference.charAt(0).toUpperCase() + listing.genderPreference.slice(1) %> Only</div>
+          </div>
+        </div>
+        <% } %>
+        
+        <% if(listing.preferredTenants && listing.preferredTenants !== 'any') { %>
+        <div class="highlight-item">
+          <div class="highlight-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="highlight-details">
+            <div class="highlight-label">Preferred Tenants</div>
+            <div class="highlight-value"><%= listing.preferredTenants.charAt(0).toUpperCase() + listing.preferredTenants.slice(1) %></div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Display amenities in an attractive grid layout -->
+    <% if(listing.amenities) { %>
+    <div class="amenity-section mb-4">
+      <h4 class="section-title">
+        <i class="fas fa-concierge-bell section-icon"></i>
+        Amenities
+      </h4>
+      <div class="amenities-grid">
+        <% if(listing.amenities.attachedBathroom) { %>
+        <div class="amenity-card">
+          <div class="amenity-icon"><i class="fas fa-bath"></i></div>
+          <div class="amenity-name">Attached Bathroom</div>
+        </div>
+        <% } %>
+        
+        <% if(listing.amenities.kitchenAccess) { %>
+        <div class="amenity-card">
+          <div class="amenity-icon"><i class="fas fa-utensils"></i></div>
+          <div class="amenity-name">Kitchen Access</div>
+        </div>
+        <% } %>
+        
+        <% if(listing.amenities.wifi) { %>
+        <div class="amenity-card">
+          <div class="amenity-icon"><i class="fas fa-wifi"></i></div>
+          <div class="amenity-name">WiFi</div>
+        </div>
+        <% } %>
+        
+        <% if(listing.amenities.ac) { %>
+        <div class="amenity-card">
+          <div class="amenity-icon"><i class="fas fa-snowflake"></i></div>
+          <div class="amenity-name">Air Conditioning</div>
+        </div>
+        <% } %>
+        
+        <% if(listing.amenities.laundry) { %>
+        <div class="amenity-card">
+          <div class="amenity-icon"><i class="fas fa-tshirt"></i></div>
+          <div class="amenity-name">Laundry</div>
+        </div>
+        <% } %>
+        
+        <% if(listing.amenities.parking) { %>
+        <div class="amenity-card">
+          <div class="amenity-icon"><i class="fas fa-parking"></i></div>
+          <div class="amenity-name">Parking</div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- Display house rules with modern styling -->
+    <% if(listing.rules) { %>
+    <div class="rules-section mb-4">
+      <h4 class="section-title">
+        <i class="fas fa-clipboard-list section-icon"></i>
+        House Rules
+      </h4>
+      <div class="rules-container">
+        <div class="rule-item <%= listing.rules.smoking ? 'allowed' : 'not-allowed' %>">
+          <div class="rule-icon">
+            <i class="fas <%= listing.rules.smoking ? 'fa-smoking' : 'fa-smoking-ban' %>"></i>
+          </div>
+          <div class="rule-details">
+            <div class="rule-name">Smoking</div>
+            <div class="rule-status"><%= listing.rules.smoking ? 'Allowed' : 'Not Allowed' %></div>
+          </div>
+        </div>
+        
+        <div class="rule-item <%= listing.rules.pets ? 'allowed' : 'not-allowed' %>">
+          <div class="rule-icon">
+            <i class="fas <%= listing.rules.pets ? 'fa-paw' : 'fa-ban' %>"></i>
+          </div>
+          <div class="rule-details">
+            <div class="rule-name">Pets</div>
+            <div class="rule-status"><%= listing.rules.pets ? 'Allowed' : 'Not Allowed' %></div>
+          </div>
+        </div>
+        
+        <div class="rule-item <%= listing.rules.guests ? 'allowed' : 'not-allowed' %>">
+          <div class="rule-icon">
+            <i class="fas <%= listing.rules.guests ? 'fa-user-friends' : 'fa-user-slash' %>"></i>
+          </div>
+          <div class="rule-details">
+            <div class="rule-name">Guests</div>
+            <div class="rule-status"><%= listing.rules.guests ? 'Allowed' : 'Not Allowed' %></div>
+          </div>
+        </div>
+        
+        <% if(listing.rules.curfew) { %>
+        <div class="rule-item curfew">
+          <div class="rule-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="rule-details">
+            <div class="rule-name">Curfew</div>
+            <div class="rule-status">In Effect</div>
+          </div>
+        </div>
+        <% } %>
+      </div>
+      
+      <% if(listing.rules.curfewDetails) { %>
+      <div class="curfew-details mt-3">
+        <i class="fas fa-info-circle"></i>
+        <span><%= listing.rules.curfewDetails %></span>
+      </div>
+      <% } %>
+    </div>
+    <% } %>
+
+    <!-- Additional Rental Details - Enhanced -->
+    <div class="rental-details-section mb-4">
+      <h4 class="section-title">
+        <i class="fas fa-file-contract section-icon"></i>
+        Rental Details
+      </h4>
+      <div class="rental-details-card">
+        <div class="rental-detail-grid">
+          <!-- Availability Info -->
+          <div class="rental-detail-item availability">
+            <div class="rental-detail-label">Availability</div>
+            <div class="rental-detail-value <%= listing.immediateAvailability ? 'immediate' : '' %>">
+              <i class="fas <%= listing.immediateAvailability ? 'fa-check-circle' : 'fa-calendar-alt' %>"></i>
+              <% if(listing.immediateAvailability) { %>
+                Available Now
+              <% } else if(listing.availableFrom) { %>
+                From <%= listing.availableFrom.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+              <% } %>
+            </div>
+          </div>
+          
+          <!-- Security Deposit -->
+          <% if(listing.securityDeposit > 0) { %>
+          <div class="rental-detail-item deposit">
+            <div class="rental-detail-label">Security Deposit</div>
+            <div class="rental-detail-value">
+              <i class="fas fa-shield-alt"></i>
+              ₹<%= listing.securityDeposit.toLocaleString("en-IN") %>
+            </div>
+          </div>
+          <% } %>
+          
+          <!-- Minimum Stay -->
+          <% if(listing.minStayMonths > 0) { %>
+          <div class="rental-detail-item stay">
+            <div class="rental-detail-label">Minimum Stay</div>
+            <div class="rental-detail-value">
+              <i class="fas fa-calendar-day"></i>
+              <%= listing.minStayMonths %> month<%= listing.minStayMonths !== 1 ? 's' : '' %>
+            </div>
+          </div>
+          <% } %>
+          
+          <!-- Bills Info -->
+          <% if(listing.bills) { %>
+          <div class="rental-detail-item bills">
+            <div class="rental-detail-label">Bills</div>
+            <div class="rental-detail-value">
+              <i class="fas <%= listing.bills.included ? 'fa-receipt' : 'fa-file-invoice' %>"></i>
+              <%= listing.bills.included ? 'Included in rent' : 'Not included' %>
+            </div>
+          </div>
+          <% } %>
+        </div>
+        
+        <!-- Bills Details if they exist -->
+        <% if(listing.bills && listing.bills.details) { %>
+        <div class="rental-detail-note">
+          <i class="fas fa-info-circle"></i>
+          <%= listing.bills.details %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <h2>About this place</h2>
+    <div class="listing-description">
+      <p><%= listing.description %></p>
+    </div>
+  </div>
+
+  <div class="listing-price-location mt-4">
+    <div class="price-badge">
+      <span class="price"
+        >₹<%= listing.price.toLocaleString("en-IN") %></span
+      >
+      <span class="per-night">night</span>
+    </div>
+    <div class="location-details">
+      <i class="fas fa-map-marked-alt"></i>
+      <span class="location-text"
+        ><%= listing.location %>, <%= listing.country %></span
+      >
+    </div>
+  </div>
+
+  <!-- hiding buttons from unauthorised users -->
+  <% if(currUser && currUser._id.equals(listing.owner._id)) {%>
+  <div class="admin-buttons mt-4">
+    <a
+      class="btn btn-outline-dark"
+      href="/listings/<%= listing._id %>/edit"
+    >
+      <i class="fas fa-edit"></i> Edit
+    </a>
+    <form
+      method="post"
+      action="/listings/<%=listing._id%>?_method=DELETE"
+      class="d-inline"
+    >
+      <button type="button" class="btn btn-sm btn-outline-dark btn-delete" data-item-type="listing">
+        <i class="fas fa-trash-alt"></i> Delete Listing
+      </button>
+    </form>
+  </div>
+  <% } %>
+
+  <hr class="my-4" />
+
+  <!-- Reviews Section -->
+  <div class="reviews-section">
+    <h2 class="reviews-header">
+      <i class="fas fa-star"></i>
+      <% if(listing.reviews.length > 0) { %> <% let avgRating = 0; %> <%
+      listing.reviews.forEach(review => { avgRating += review.rating }); %>
+      <% avgRating = (avgRating / listing.reviews.length).toFixed(1); %> <%=
+      avgRating %> · <%= listing.reviews.length %> review<%=
+      listing.reviews.length !== 1 ? 's' : '' %> <% } else { %> No reviews
+      yet <% } %>
+    </h2>
+
+    <!-- Reviews Grid -->
+    <div class="reviews-container">
+      <% for(review of listing.reviews) { %>
+      <div class="review-card">
+        <div class="review-header">
+          <div class="reviewer-info">
+            <div class="reviewer-avatar">
+              <% if (review.author && review.author.image) { %>
+                <% if (review.author.image.url) { %>
+                  <img
+                    src="<%= review.author.image.url.startsWith('http') ? review.author.image.url : `/${review.author.image.url}` %>"
+                    alt="<%= review.author.username %>'s avatar"
+                    onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fas fa-user-circle\'></i>'"
+                  />
+                <% } else { %>
+                  <img
+                    src="<%= review.author.image.startsWith('http') ? review.author.image : `/${review.author.image}` %>"
+                    alt="<%= review.author.username %>'s avatar"
+                    onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fas fa-user-circle\'></i>'"
+                  />
+                <% } %>
+              <% } else { %>
+                <i class="fas fa-user-circle"></i>
+              <% } %>
+            </div>
+            <div class="reviewer-details">
+              <h5 class="reviewer-name">
+                <%= review.author ? review.author.username : 'Anonymous' %>
+                <% if (true || (review.author && review.author.isVerified)) { %>
+                  <span class="verified-badge ms-1" title="Verified User">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19.3 5.3L9 15.6l-4.3-4.3-1.4 1.4 5.7 5.7 11.7-11.7z" />
+                    </svg>
+                  </span>
+                <% } %>
+              </h5>
+              <p class="review-date">
+                <%= review.createdAt.toLocaleDateString('en-US', { month:
+                'long', year: 'numeric' }) %>
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="review-content">
+          <div class="review-rating"><%= "⭐".repeat(review.rating) %></div>
+          <p class="review-text"><%= review.comment %></p>
+        </div>
+        <% if (currentUser && review.author && review.author._id.equals(currentUser._id)) { %>
+  <form
+    method="post"
+    action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE"
+    class="d-inline"
+  >
+    <button type="button" class="btn btn-sm btn-outline-dark btn-delete" data-item-type="review">
+      <i class="fas fa-trash-alt"></i> Delete Review
+    </button>
+  </form>
+<% } %>
+
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Add Review Section -->
+<div class="col-lg-4 col-md-12 mt-4 mt-lg-0">
+  <% if (!currUser) {%>
+  <div class="add-review-containerGuest">
+    <div class="d-flex flex-column align-items-center gap-3">
+      <h3 class="text-center mb-2">
+        Join the community to share your experience
+      </h3>
+      <div class="d-flex flex-column flex-md-row gap-3 w-100">
+        <a href="/signup" class="btn btn-primary btn-lg flex-grow-1 py-3">
+          <i class="fas fa-user-plus me-2"></i>Create Account
+        </a>
+        <a
+          href="/login"
+          class="btn btn-outline-dark btn-lg flex-grow-1 py-3"
+        >
+          <i class="fas fa-sign-in-alt me-2"></i>Sign In
+        </a>
+      </div>
+      <p class="text-muted small mt-2 mb-0">
+        Your reviews help others discover great places
+      </p>
+    </div>
+  </div>
+  <%}%> <% if (currUser) {%>
+  <div class="add-review-container">
+    <h3>Add Your Review</h3>
+    <form
+      action="/listings/<%= listing._id %>/reviews"
+      method="post"
+      novalidate
+      class="needs-validation review-form"
+    >
+      <div class="mb-3">
+        <label for="rating" class="form-label">Rating</label>
+        <!-- Replace the range input with starability-slot -->
+        <fieldset class="starability-slot">
+          <input
+            type="radio"
+            id="no-rate"
+            class="input-no-rate"
+            name="review[rating]"
+            value="1"
+            checked
+            aria-label="No rating."
+          />
+          <input
+            type="radio"
+            id="first-rate1"
+            name="review[rating]"
+            value="1"
+          />
+          <label for="first-rate1" title="Terrible">1 star</label>
+          <input
+            type="radio"
+            id="first-rate2"
+            name="review[rating]"
+            value="2"
+          />
+          <label for="first-rate2" title="Not good">2 stars</label>
+          <input
+            type="radio"
+            id="first-rate3"
+            name="review[rating]"
+            value="3"
+          />
+          <label for="first-rate3" title="Average">3 stars</label>
+          <input
+            type="radio"
+            id="first-rate4"
+            name="review[rating]"
+            value="4"
+          />
+          <label for="first-rate4" title="Very good">4 stars</label>
+          <input
+            type="radio"
+            id="first-rate5"
+            name="review[rating]"
+            value="5"
+          />
+          <label for="first-rate5" title="Amazing">5 stars</label>
+        </fieldset>
+      </div>
+
+      <div class="mb-3">
+        <label for="comment" class="form-label">Comment</label>
+        <textarea
+          id="comment"
+          name="review[comment]"
+          rows="4"
+          class="form-control"
+          placeholder="Write your experience..."
+          required
+        ></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">
+        Submit Review
+      </button>
+    </form>
+  </div>
+  <% } %>
+</div>
+  </div>
+</div>
+<!-- Enhanced styles for all the new components -->
+<style>
+  /* Common Section Styling */
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+  }
+  
+  .section-icon {
+    margin-right: 10px;
+    color: #FF385C;
+  }
+
+  /* Confirmation Modal Styles */
+  #confirmationModal .modal-content {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  #confirmationModal .modal-header {
+    border-bottom: 1px solid #eaeaea;
+    padding: 1.25rem 1.5rem;
+  }
+
+  #confirmationModal .modal-title {
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  #confirmationModal .modal-body {
+    padding: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #555;
+  }
+
+  #confirmationModal .modal-footer {
+    border-top: 1px solid #eaeaea;
+    padding: 1rem 1.5rem;
+    justify-content: flex-end;
+  }
+
+  #confirmationModal .btn-close {
+    padding: 0.5rem;
+    margin: -0.5rem -0.5rem -0.5rem auto;
+  }
+
+  #confirmationModal .btn-secondary {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    color: #333;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  #confirmationModal .btn-secondary:hover {
+    background-color: #e9e9e9;
+  }
+
+  #confirmationModal .btn-danger {
+    background-color: #FF385C;
+    border: none;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-left: 0.75rem;
+  }
+
+  #confirmationModal .btn-danger:hover {
+    background-color: #e31c4a;
+  }
+  
+  /* Property Highlights */
+  .highlights-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .highlight-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .highlight-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .highlight-icon {
+    font-size: 1.5rem;
+    color: #FF385C;
+    margin-right: 15px;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(52, 152, 219, 0.1);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .highlight-details {
+    flex: 1;
+  }
+  
+  .highlight-label {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin-bottom: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .highlight-value {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  /* Amenities Grid */
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 15px;
+  }
+  
+  .amenity-card {
+    padding: 20px 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: all 0.2s ease;
+  }
+  
+  .amenity-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    background-color: #ebf5fb;
+  }
+  
+  .amenity-icon {
+    font-size: 2rem;
+    color: #FF385C;
+    margin-bottom: 10px;
+  }
+  
+  .amenity-name {
+    font-weight: 500;
+    color: #2c3e50;
+  }
+  
+  /* House Rules Styling */
+  .rules-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+  }
+  
+  .rule-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  
+  .rule-item.allowed {
+    border-left: 4px solid #2ecc71;
+  }
+  
+  .rule-item.not-allowed {
+    border-left: 4px solid #e74c3c;
+  }
+  
+  .rule-item.curfew {
+    border-left: 4px solid #f39c12;
+  }
+  
+  .rule-icon {
+    font-size: 1.25rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+  }
+  
+  .rule-item.allowed .rule-icon {
+    color: #2ecc71;
+    background-color: rgba(46, 204, 113, 0.1);
+  }
+  
+  .rule-item.not-allowed .rule-icon {
+    color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.1);
+  }
+  
+  .rule-item.curfew .rule-icon {
+    color: #f39c12;
+    background-color: rgba(243, 156, 18, 0.1);
+  }
+  
+  .rule-details {
+    flex: 1;
+  }
+  
+  .rule-name {
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  .rule-status {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+  }
+  
+  .curfew-details {
+    background-color: #fff8e1;
+    padding: 10px 15px;
+    border-radius: 6px;
+    color: #b58105;
+    font-size: 0.95rem;
+  }
+  
+  /* Rental Details Styling */
+  .rental-details-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    border: 1px solid #e9ecef;
+  }
+  
+  .rental-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  
+  .rental-detail-item {
+    padding-bottom: 15px;
+  }
+  
+  .rental-detail-label {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+  }
+  
+  .rental-detail-value {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+  }
+  
+  .rental-detail-value i {
+    margin-right: 8px;
+    color: #7f8c8d;
+  }
+  
+  .rental-detail-value.immediate i {
+    color: #2ecc71;
+  }
+  
+  .rental-detail-note {
+    margin-top: 15px;
+    padding: 10px 15px;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #7f8c8d;
+  }
+  
+  .rental-detail-note i {
+    margin-right: 8px;
+    color: #FF385C;
+  }
+  
+  /* Responsive Adjustments */
+  @media (max-width: 768px) {
+    .highlights-container, .amenities-grid, .rules-container, .rental-detail-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .highlights-container, .rules-container, .rental-detail-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .amenities-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Function to update all favorite counts on the page
+    const updateFavoriteCounts = (newCount) => {
+      // Ensure the count is never negative
+      const count = Math.max(0, parseInt(newCount, 10));
+      console.log('Updating favorite counts to:', count);
+      
+      // Update all elements with the favorite-count class
+      document.querySelectorAll('.favorite-count').forEach(el => {
+        el.textContent = count;
+      });
+    };
+    
+    // Initialize favorite count from data attribute
+    const favoriteCountElement = document.querySelector('.favorite-count');
+    let currentFavoriteCount = 0;
+    
+    if (favoriteCountElement) {
+      const initialCount = favoriteCountElement.getAttribute('data-initial-favorite-count');
+      currentFavoriteCount = Math.max(0, parseInt(initialCount, 10) || 0);
+      updateFavoriteCounts(currentFavoriteCount);
+    }
+    
+    console.log('Initial favorite count from server:', currentFavoriteCount);
+    
+    // Toast notification function - matches the one in script.js
+    function showToast(message, type = 'success') {
+      // Remove existing toast if any
+      const existingToast = document.querySelector('.toast-notification');
+      if (existingToast) {
+        existingToast.remove();
+      }
+
+      // Create new toast
+      const toast = document.createElement('div');
+      
+      // Set toast class based on type
+      let toastType = type;
+      if (type === 'added') {
+        toastType = 'error'; // Using error class for red color
+      } else if (type === 'removed') {
+        toastType = 'info';
+      }
+      
+      toast.className = `toast-notification ${toastType}`;
+      
+      // Select appropriate icon and message based on type
+      let icon, messageText;
+      switch (type) {
+        case 'success':
+          icon = 'fa-check-circle';
+          messageText = message;
+          break;
+        case 'error':
+          icon = 'fa-exclamation-circle';
+          messageText = message;
+          break;
+        case 'added':
+          icon = 'fa-heart';
+          messageText = 'Added to favorites';
+          break;
+        case 'removed':
+          icon = 'fa-heart-broken';
+          messageText = 'Removed from favorites';
+          break;
+        default:
+          icon = 'fa-info-circle';
+          messageText = message;
+      }
+
+      toast.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <span>${messageText}</span>
+      `;
+
+      // Add to DOM
+      document.body.appendChild(toast);
+
+      // Trigger animation
+      requestAnimationFrame(() => {
+        toast.classList.add('show');
+      });
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          toast.remove();
+        }, 300);
+      }, 3000);
+    }
+
+    // Favorite button functionality
+    const favoriteBtns = document.querySelectorAll('.favorite-btn');
+    
+    favoriteBtns.forEach(btn => {
+      btn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const listingId = this.dataset.listingId;
+        if (!listingId) {
+          console.error('No listing ID found on the button');
+          showToast('Could not process request', 'error');
+          return;
+        }
+        
+        // Check if user is logged in
+        if (!<%= currentUser ? 'true' : 'false' %>) {
+          window.location.href = '/login';
+          return;
+        }
+        const icon = this.querySelector('i');
+        const isActive = this.classList.contains('active');
+        
+        // Show loading state
+        this.classList.add('loading');
+        icon.className = 'fas fa-spinner fa-spin';
+        
+        try {
+          const response = await fetch(`/user/toggle-favorite/${listingId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin'
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            // Update the favorite count from server response
+            if (data.favoriteCount !== undefined) {
+              currentFavoriteCount = Math.max(0, parseInt(data.favoriteCount, 10));
+              updateFavoriteCounts(currentFavoriteCount);
+              
+              // Update button state based on server response
+              if (data.status === 'added') {
+                icon.className = 'fas fa-heart';
+                this.classList.add('active');
+                showToast('Added to favorites!', 'added');
+              } else if (data.status === 'removed') {
+                icon.className = 'far fa-heart';
+                this.classList.remove('active');
+                showToast('Removed from favorites', 'removed');
+              }
+            } else {
+              // Fallback if no favoriteCount in response
+              if (data.status === 'added') {
+                currentFavoriteCount++;
+                icon.className = 'fas fa-heart';
+                this.classList.add('active');
+                showToast('Added to favorites!', 'added');
+              } else if (data.status === 'removed') {
+                currentFavoriteCount = Math.max(0, currentFavoriteCount - 1);
+                icon.className = 'far fa-heart';
+                this.classList.remove('active');
+                showToast('Removed from favorites', 'removed');
+              }
+              updateFavoriteCounts(currentFavoriteCount);
+            }
+            
+            // Add animation class
+            this.classList.add('animating');
+            setTimeout(() => this.classList.remove('animating'), 600);
+            
+            // Update favorite count in all .favorite-count elements
+            document.querySelectorAll('.favorite-count').forEach(el => {
+              el.textContent = currentFavoriteCount;
+            });
+        } catch (error) {
+          console.error('Error toggling favorite:', error);
+          showToast('Please login to add listings to favorites', 'error');
+          // Reset icon based on current state on error
+          icon.className = this.classList.contains('active') ? 'fas fa-heart' : 'far fa-heart';
+        }
+      });
+    });
+  });
+  </script>
+
+<style>
+  /* Favorite Button */
+  .favorite-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+    padding: 8px;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .favorite-btn i {
+    font-size: 1.5rem;
+    color: white;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: center;
+  }
+
+  .favorite-btn.active i {
+    color: #FF385C;
+    transform: scale(1.1);
+    filter: drop-shadow(0 2px 8px rgba(255, 56, 92, 0.4));
+  }
+
+  .favorite-btn:hover {
+    transform: scale(1.15);
+  }
+
+  .favorite-btn:active {
+    transform: scale(0.95);
+  }
+
+  .favorite-btn.animating i {
+    animation: likeAnimation 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+
+
+  @keyframes likeAnimation {
+    0% { 
+      transform: scale(1); 
+    }
+    25% { 
+      transform: scale(1.2) rotate(-15deg); 
+    }
+    45% { 
+      transform: scale(1.2) rotate(15deg); 
+    }
+    65% { 
+      transform: scale(1.2) rotate(-10deg); 
+    }
+    85% { 
+      transform: scale(1.2) rotate(5deg); 
+    }
+    100% { 
+      transform: scale(1); 
+    }
+  }
+  
+  /* Toast notifications */
+  .toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .toast {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    min-width: 250px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+  }
+  
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .toast-icon {
+    margin-right: 12px;
+    font-size: 1.2rem;
+  }
+  
+  .toast-message {
+    flex-grow: 1;
+    font-size: 0.95rem;
+  }
+  
+  .toast-close {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 8px;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  
+  .toast-close:hover {
+    opacity: 1;
+  }
+  
+  .toast.added .toast-icon {
+    color: #ff6b6b;
+  }
+  
+  .toast.removed .toast-icon {
+    color: #ff6b6b;
+  }
+  
+  .toast.success .toast-icon {
+    color: #28a745;
+  }
+  
+  .toast.error .toast-icon {
+    color: #dc3545;
+  }
+  
+  .toast.warning .toast-icon {
+    color: #ffc107;
+  }
+  
+  .toast.info .toast-icon {
+    color: #17a2b8;
+  }
+</style>
+
+<script src="/js/script.js"></script>

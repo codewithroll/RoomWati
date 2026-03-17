@@ -1,0 +1,177 @@
+<%- include("../includes/flash") %> <% layout("/layouts/boilerplate") %>
+
+<div class="user-profile-container">
+  <div class="edit-profile-header">
+    <h1>Edit Profile</h1>
+    <p>Update your profile information and images</p>
+  </div>
+
+  <form
+    action="/profile?_method=PUT"
+    method="POST"
+    enctype="multipart/form-data"
+    class="edit-profile-form"
+  >
+    <div class="image-preview-section">
+      <div class="cover-image-preview">
+        <img
+          src="<%= user.coverImage.url %>"
+          alt="Cover Image Preview"
+          id="coverPreview"
+        />
+        <div class="image-upload-overlay">
+          <label for="coverImage" class="upload-label">
+            <i class="fas fa-camera"></i>
+            Change Cover Photo
+          </label>
+          <input
+            type="file"
+            id="coverImage"
+            name="coverImage"
+            accept="image/*"
+            class="image-upload"
+          />
+        </div>
+      </div>
+
+      <div class="profile-image-preview">
+        <img
+          src="<%= user.image.url %>"
+          alt="Profile Image Preview"
+          id="profilePreview"
+        />
+        <div class="image-upload-overlay">
+          <label for="profileImage" class="upload-label">
+            <i class="fas fa-camera"></i>
+            Change Profile Photo
+          </label>
+          <input
+            type="file"
+            id="profileImage"
+            name="profileImage"
+            accept="image/*"
+            class="image-upload"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-group-container">
+        <div class="form-group">
+          <label for="username">
+            <i class="fas fa-user"></i>
+            Username
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value="<%= user.username %>"
+            required
+            class="form-control"
+            placeholder="Enter your username"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="email">
+            <i class="fas fa-envelope"></i>
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value="<%= user.email %>"
+            required
+            class="form-control"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div class="form-group bio-group">
+          <label for="bio">
+            <i class="fas fa-pen"></i>
+            Bio
+          </label>
+          <textarea
+            id="bio"
+            name="bio"
+            class="form-control bio-input"
+            placeholder="Write something about yourself..."
+            maxlength="200"
+          >
+<%= user.bio %></textarea
+          >
+          <div class="bio-counter">
+            <span id="bioCharCount">0</span>/200 characters
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="/profile" class="btn btn-outline">
+          <i class="fas fa-times"></i>
+          Cancel
+        </a>
+        <button type="submit" class="btn btn-primary">
+          <i class="fas fa-check"></i>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Preview uploaded images
+  function previewImage(input, previewId) {
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const previewImage = document.getElementById(previewId);
+        previewImage.src = e.target.result;
+
+        // If this is the profile image, also update navbar
+        if (previewId === "profilePreview") {
+          const navbarImage = document.getElementById("navbar-profile-image");
+          if (navbarImage) {
+            navbarImage.src = e.target.result;
+          }
+        }
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  document
+    .getElementById("profileImage")
+    .addEventListener("change", function () {
+      previewImage(this, "profilePreview");
+    });
+
+  document.getElementById("coverImage").addEventListener("change", function () {
+    previewImage(this, "coverPreview");
+  });
+
+  // Bio character counter
+  const bioInput = document.getElementById("bio");
+  const bioCharCount = document.getElementById("bioCharCount");
+
+  function updateCharCount() {
+    const count = bioInput.value.length;
+    bioCharCount.textContent = count;
+
+    // Optional: Add visual feedback when approaching limit
+    if (count >= 180) {
+      bioCharCount.style.color = "#e11d48";
+    } else {
+      bioCharCount.style.color = "#6b7280";
+    }
+  }
+
+  bioInput.addEventListener("input", updateCharCount);
+  // Initialize counter
+  updateCharCount();
+</script>

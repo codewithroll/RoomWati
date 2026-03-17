@@ -1,0 +1,301 @@
+<% 
+// Initialize variables with safe defaults
+const hasWelcomeMessage = typeof showWelcomeMessage !== 'undefined' ? showWelcomeMessage : false;
+const welcomeMsg = typeof welcomeMessage !== 'undefined' ? welcomeMessage : '';
+
+// Get flash messages with fallbacks
+const successMsgs = [];
+const errorMsgs = [];
+
+// Handle success messages
+if (typeof success !== 'undefined' && success) {
+  if (Array.isArray(success)) {
+    successMsgs.push(...success);
+  } else {
+    successMsgs.push(String(success));
+  }
+}
+
+// Handle error messages
+if (typeof error !== 'undefined' && error) {
+  if (Array.isArray(error)) {
+    errorMsgs.push(...error);
+  } else {
+    errorMsgs.push(String(error));
+  }
+}
+%>
+
+<style>
+  /* Flash Messages Container */
+  .flash-container {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1100;
+    width: auto;
+    max-width: 90%;
+    min-width: 300px;
+  }
+
+  /* Enhanced Alert Styling with proper alignment */
+  .alert-enhanced {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    position: relative;
+    padding: 0.75rem 1rem 0.75rem 1rem;
+    border: none;
+    margin-bottom: 1rem;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: alertAppear 0.3s ease forwards;
+    display: flex;
+    align-items: center;
+    max-width: 500px;
+    width: 100%;
+  }
+
+  @keyframes alertAppear {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Success Alert */
+  .alert-enhanced.alert-success {
+    background-color: #f0fdf4;
+    border-left: 4px solid #10b981;
+    color: #065f46;
+  }
+
+  /* Error Alert */
+  .alert-enhanced.alert-danger {
+    background-color: #fef2f2;
+    border-left: 4px solid #ef4444;
+    color: #991b1b;
+  }
+
+  /* Alert Container - keeps content and close button aligned */
+  .alert-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  /* Icon Styling */
+  .alert-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  .alert-enhanced.alert-success .alert-icon {
+    color: #00a699;
+  }
+
+  .alert-enhanced.alert-danger .alert-icon {
+    color: #ff385c;
+  }
+
+  /* Alert Content */
+  .alert-content {
+    flex: 1;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.4;
+    padding-right: 20px; /* Space for close button */
+  }
+
+  /* Close Button */
+  .alert-enhanced .close-btn {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 1.1rem;
+    line-height: 1;
+    opacity: 0.7;
+    cursor: pointer;
+    color: inherit;
+    transition: opacity 0.2s;
+  }
+  
+  .alert-enhanced .close-btn:hover {
+    opacity: 1;
+  }
+
+  .alert-enhanced .close-btn:hover {
+    opacity: 1;
+  }
+
+  /* Animation for dismissing */
+  .alert-dismiss {
+    animation: alertDismiss 0.3s ease forwards;
+  }
+
+  @keyframes alertDismiss {
+    to {
+      opacity: 0;
+      transform: translateY(-10px);
+      margin-top: -20px;
+    }
+  }
+
+  /* Animation for error shake */
+  .alert-shake {
+    animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+  }
+
+  @keyframes shake {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translateX(-5px);
+    }
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translateX(5px);
+    }
+  }
+</style>
+
+<div class="flash-container">
+  <% if (hasWelcomeMessage && welcomeMsg) { %>
+    <% const welcomeId = 'welcome-' + Math.random().toString(36).substr(2, 9); %>
+    <div id="<%= welcomeId %>" class="alert-enhanced alert-success">
+      <div class="alert-container">
+        <div class="alert-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="alert-content">
+          <%= welcomeMsg %>
+        </div>
+        <button class="close-btn" onclick="dismissAlert('<%= welcomeId %>')" aria-label="Close">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  <% } %>
+
+  <% if (successMsgs.length > 0) { %>
+    <% successMsgs.forEach(function(message) { %>
+      <% const successId = 'success-' + Math.random().toString(36).substr(2, 9); %>
+      <div id="<%= successId %>" class="alert-enhanced alert-success">
+        <div class="alert-container">
+          <div class="alert-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="alert-content">
+            <%= message %>
+          </div>
+          <button class="close-btn" onclick="dismissAlert('<%= successId %>')" aria-label="Close">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    <% }); %>
+  <% } %>
+
+  <% if (errorMsgs.length > 0) { %>
+    <% errorMsgs.forEach(function(message) { %>
+      <% const errorId = 'error-' + Math.random().toString(36).substr(2, 9); %>
+      <div id="<%= errorId %>" class="alert-enhanced alert-danger">
+        <div class="alert-container">
+          <div class="alert-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z" fill="currentColor"/>
+            </svg>
+          </div>
+          <div class="alert-content">
+            <%= message %>
+          </div>
+          <button class="close-btn" onclick="dismissAlert('<%= errorId %>')" aria-label="Close">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z" fill="currentColor"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    <% }); %>
+  <% } %>
+</div>
+
+<script>
+  // Function to dismiss alert with animation
+  function dismissAlert(id) {
+    const alert = document.getElementById(id);
+    if (alert) {
+      alert.classList.add("alert-dismiss");
+      setTimeout(() => {
+        alert.remove();
+      }, 300);
+    }
+  }
+
+  // Auto-dismiss all alerts after 3.5 seconds
+  document.addEventListener("DOMContentLoaded", () => {
+    // Auto-dismiss alerts after delay
+    const alerts = document.querySelectorAll('.alert-enhanced');
+    alerts.forEach(alert => {
+      // Set a unique ID if not exists
+      if (!alert.id) {
+        alert.id = `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      }
+      
+      // Auto-dismiss after 3.5 seconds
+      const dismissTimer = setTimeout(() => {
+        dismissAlert(alert.id);
+      }, 3500);
+      
+      // Pause auto-dismiss on hover
+      alert.addEventListener('mouseenter', () => {
+        clearTimeout(dismissTimer);
+      });
+      
+      // Resume auto-dismiss when mouse leaves
+      alert.addEventListener('mouseleave', () => {
+        setTimeout(() => {
+          dismissAlert(alert.id);
+        }, 3500);
+      });
+      
+      // Add slide-in animation
+      setTimeout(() => {
+        alert.style.opacity = '1';
+        alert.style.transform = 'translateY(0)';
+      }, 10);
+    });
+    
+    // Add shake animation to error alerts
+    const errorAlerts = document.querySelectorAll('.alert-danger');
+    errorAlerts.forEach(alert => {
+      alert.classList.add('alert-shake');
+    });
+  });
+</script>
