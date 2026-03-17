@@ -17,6 +17,7 @@ const authRouter = require("./routes/auth.js");
 const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
+require("./passport");
 const LocalStrategy = require("passport-local");
 const User = require("./models/user.js");
 const emailjs = require("emailjs-com");
@@ -56,7 +57,7 @@ app.use(express.static(path.join(__dirname, "/public")));
 const sessionOptions = {
   secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true,
+  saveUninitialized: false,
   cookie: {
     expires: Date.now() + 7 * 24 * 60 * 60 * 1000, //Date.now() miliseconds mein time deta h isiliye humne next seven days ko miliseconds mein convert krke add kra so that cookie agle 7 din tk saved rahe
     maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -127,7 +128,7 @@ app.use(userRouter);
 
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
-app.use("", userRouter);
+
 app.use("/auth", authRouter);
 
 // OTP Verification Page
@@ -209,6 +210,38 @@ app.get("/delete-seed", async (req, res) => {
     res.status(500).send("❌ Failed to delete listings.");
   }
 });
+
+// GOOGLE
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/signup",
+  }),
+  (req, res) => {
+    res.redirect("/listings");
+  },
+);
+
+// FACEBOOK
+app.get(
+  "/auth/facebook",
+  passport.authenticate("facebook", { scope: ["email"] }),
+);
+
+app.get(
+  "/auth/facebook/callback",
+  passport.authenticate("facebook", {
+    failureRedirect: "/signup",
+  }),
+  (req, res) => {
+    res.redirect("/listings");
+  },
+);
 
 // Handle 404 errors
 app.all("*", (req, res, next) => {

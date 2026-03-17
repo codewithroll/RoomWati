@@ -5,7 +5,7 @@ const passportLocalMongoose = require("passport-local-mongoose");
 const userSchema = new Schema({
   email: {
     type: String,
-    required: true,
+    required: false, // ✅ changed (social login may not always provide email)
     unique: true,
   },
   username: {
@@ -13,6 +13,12 @@ const userSchema = new Schema({
     required: true,
     unique: true,
   },
+
+  // ✅ ADDED for social login
+  googleId: String,
+  facebookId: String,
+  appleId: String,
+
   bio: {
     type: String,
     default: "Hey there! I'm using RoomWati to find and share amazing places.",
@@ -43,6 +49,6 @@ const userSchema = new Schema({
   resetPasswordExpires: Date,
 });
 
-userSchema.plugin(passportLocalMongoose); //username, hashing, salting  and hashed password + some useful methods (read docs) inn sbko automatically implement krdega
+userSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("User", userSchema);

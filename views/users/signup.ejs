@@ -66,7 +66,11 @@
       </div>
 
       <div class="social-login-options">
-        <button type="button" class="social-login-btn google-btn">
+        <button
+          type="button"
+          class="social-login-btn google-btn"
+          onclick="window.location.href = '/auth/google'"
+        >
           <img
             src="https://cdn.cdnlogo.com/logos/g/35/google-icon.svg"
             alt="Google logo"
@@ -75,11 +79,21 @@
           />
           <span>Continue with Google</span>
         </button>
-        <button type="button" class="social-login-btn facebook-btn">
+
+        <button
+          type="button"
+          class="social-login-btn facebook-btn"
+          onclick="window.location.href = '/auth/facebook'"
+        >
           <i class="fa-brands fa-facebook-f"></i>
           <span>Continue with Facebook</span>
         </button>
-        <button type="button" class="social-login-btn apple-btn">
+
+        <button
+          type="button"
+          class="social-login-btn apple-btn"
+          onclick="window.location.href = '/auth/apple'"
+        >
           <i class="fa-brands fa-apple"></i>
           <span>Continue with Apple</span>
         </button>
