@@ -3,7 +3,7 @@
   <div class="listing-form-container">
     <h2 class="form-heading">List your space</h2>
     <p class="form-subheading">
-      Share your place with travelers around the world
+      Share your place with renters around the world
     </p>
 
     <form
@@ -28,7 +28,7 @@
 
       <!-- Description -->
       <div class="form-group">
-        <label for="description">Describe your place to guests</label>
+        <label for="description">Describe your place to renters</label>
         <textarea
           name="listing[description]"
           class="form-control"
@@ -54,7 +54,7 @@
       <!-- Price and Country -->
       <div class="form-row">
         <div class="form-group price-group">
-          <label for="price">Price per night (₹)</label>
+          <label for="price">Price per month (₹)</label>
           <div class="price-input-container">
             <span class="currency-symbol">₹</span>
             <input
@@ -89,7 +89,7 @@
           required
         />
         <div class="location-tip">
-          Provide specific location to help guests find your place
+          Provide specific location to help renters find your place
         </div>
       </div>
 
@@ -152,15 +152,17 @@
 
       <div class="form-group">
         <label for="availableFrom">Available From</label>
-        <input 
-          type="date" 
-          name="listing[availableFrom]" 
-          class="form-control" 
+        <input
+          type="date"
+          name="listing[availableFrom]"
+          class="form-control"
           value="<%= new Date().toISOString().split('T')[0] %>"
           min="<%= new Date().toISOString().split('T')[0] %>"
           required
         />
-        <small class="form-text text-muted">Select the date when the listing becomes available</small>
+        <small class="form-text text-muted"
+          >Select the date when the listing becomes available</small
+        >
       </div>
 
       <!-- Amenities -->

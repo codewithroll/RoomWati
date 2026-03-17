@@ -2,7 +2,7 @@
 <div class="auth-container">
   <div class="auth-form-container">
     <div class="auth-header">
-      <h2>Log in to RoomWati</h2>
+      <h2>Log in to SKN_Accomodation</h2>
       <p>Welcome back! Please enter your details to continue.</p>
     </div>
 
@@ -227,7 +227,7 @@
     // Initialize EmailJS with your public key from environment
     (function () {
       emailjs.init(
-        "<%= process.env.EMAILJS_PUBLIC_KEY || 'JchnnKE5CE5umKm0i' %>"
+        "<%= process.env.EMAILJS_PUBLIC_KEY || 'JchnnKE5CE5umKm0i' %>",
       );
     })();
 
@@ -321,11 +321,11 @@
             if (result.requiresOtp) {
               // Redirect to OTP verification
               window.location.href = `/verify-otp?email=${encodeURIComponent(
-                result.email
+                result.email,
               )}`;
             } else {
               showPasswordError(
-                result.message || "Invalid username or password"
+                result.message || "Invalid username or password",
               );
             }
           }
@@ -411,7 +411,7 @@
         } catch (error) {
           console.error("Error sending OTP:", error);
           showError(
-            "Failed to send OTP. Please check your connection and try again."
+            "Failed to send OTP. Please check your connection and try again.",
           );
         } finally {
           if (sendOtpBtn) {
@@ -429,7 +429,7 @@
         const emailInput = document.getElementById("email");
         if (!emailInput || !otpInput) {
           showError(
-            "An error occurred. Please refresh the page and try again."
+            "An error occurred. Please refresh the page and try again.",
           );
           return;
         }
@@ -461,7 +461,7 @@
           }
         } catch (error) {
           showOtpError(
-            "An error occurred while verifying OTP. Please try again."
+            "An error occurred while verifying OTP. Please try again.",
           );
         } finally {
           verifyOtpBtn.disabled = false;
@@ -498,7 +498,7 @@
               showOtpSuccess("New verification code sent");
             } else {
               showOtpError(
-                result.message || "Failed to resend verification code"
+                result.message || "Failed to resend verification code",
               );
             }
           } catch (error) {
@@ -697,7 +697,9 @@
     font-size: 16px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s;
   }
 
   .form-control:focus {
