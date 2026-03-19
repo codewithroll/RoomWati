@@ -1,6 +1,33 @@
 const Listing = require("../models/listing.js");
 const User = require("../models/user.js");
 
+const DEFAULT_LISTING_IMAGE = {
+  url: "/images/beautifulDestination.jpg",
+  filename: "default-listing-image",
+};
+
+function getImageData(file) {
+  if (!file) {
+    return DEFAULT_LISTING_IMAGE;
+  }
+
+  if (file.path && /^https?:\/\//i.test(file.path)) {
+    return {
+      url: file.path,
+      filename: file.filename,
+    };
+  }
+
+  if (file.filename) {
+    return {
+      url: `/uploads/${file.filename}`,
+      filename: file.filename,
+    };
+  }
+
+  return DEFAULT_LISTING_IMAGE;
+}
+
 module.exports.index = async (req, res) => {
   try {
     let allListings = await Listing.find({})
@@ -133,15 +160,7 @@ module.exports.showListing = async (req, res) => {
 module.exports.createListing = async (req, res, next) => {
   try {
     console.log("Request body:", JSON.stringify(req.body, null, 2));
-
-    if (!req.file) {
-      console.error("No file uploaded");
-      req.flash("error", "Please upload an image for the listing.");
-      return res.redirect("/listings/new");
-    }
-
-    let url = req.file.path;
-    let filename = req.file.filename;
+    const imageData = getImageData(req.file);
 
     // Prepare listing data with proper type conversion
     const listingData = {
@@ -186,7 +205,7 @@ module.exports.createListing = async (req, res, next) => {
 
     const newListing = new Listing(listingData);
     newListing.owner = req.user._id;
-    newListing.image = { url, filename };
+    newListing.image = imageData;
 
     // Validate before saving
     const validationError = newListing.validateSync();
@@ -260,9 +279,7 @@ module.exports.updateListing = async (req, res) => {
     }
 
     if (req.file) {
-      let url = req.file.path;
-      let filename = req.file.filename;
-      listing.image = { url, filename };
+      listing.image = getImageData(req.file);
       await listing.save();
     }
 

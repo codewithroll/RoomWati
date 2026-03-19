@@ -21,7 +21,7 @@ const userSchema = new Schema({
 
   bio: {
     type: String,
-    default: "Hey there! I'm using RoomWati to find and share amazing places.",
+    default: "Hey there! I'm using SKN-ACKOMMODATION to find and share amazing places.",
   },
   image: {
     url: {
@@ -35,7 +35,7 @@ const userSchema = new Schema({
     url: {
       type: String,
       default:
-        "https://res.cloudinary.com/dxqjlxgsh/image/upload/v1703420360/RoomWati/default-cover_kxn8dr.jpg",
+        "https://res.cloudinary.com/dxqjlxgsh/image/upload/v1703420360/SKN-ACKOMMODATION/default-cover_kxn8dr.jpg",
     },
     filename: String,
   },
@@ -52,3 +52,4 @@ const userSchema = new Schema({
 userSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model("User", userSchema);
+

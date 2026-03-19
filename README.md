@@ -1,12 +1,12 @@
-# 🏠 RoomWati — The Ultimate Room Rental Platform
+# 🏠 SKN-ACKOMMODATION — The Ultimate Room Rental Platform
 
 [![Node.js](https://img.shields.io/badge/Node.js-22.7.0-brightgreen?style=flat-square&logo=node.js)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express-4.21.2-blue?style=flat-square&logo=express)](https://expressjs.com/)
 [![MongoDB Atlas](https://img.shields.io/badge/MongoDB-Atlas-success?style=flat-square&logo=mongodb)](https://mongodb.com/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-lightgrey?style=flat-square)](https://opensource.org/licenses/ISC)
-[![Live Demo](https://img.shields.io/badge/Live-Demo-orange?style=flat-square&logo=render)](https://roomwati.onrender.com)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-orange?style=flat-square&logo=render)](https://SKN-ACKOMMODATION.onrender.com)
 
-> **RoomWati** is a full-featured room rental and property listing platform designed to connect landlords with tenants in a seamless and secure environment. From OTP-based signup to smart filtering, RoomWati empowers users with tools to list, manage, and rent properties — all from one responsive dashboard.
+> **SKN-ACKOMMODATION** is a full-featured room rental and property listing platform designed to connect landlords with tenants in a seamless and secure environment. From OTP-based signup to smart filtering, SKN-ACKOMMODATION empowers users with tools to list, manage, and rent properties — all from one responsive dashboard.
 
 ---
 
@@ -104,7 +104,7 @@
 
 ## 🔒 Security Measures
 
-> RoomWati is built with a strong focus on backend security and data integrity.
+> SKN-ACKOMMODATION is built with a strong focus on backend security and data integrity.
 
 - 🔐 **Hashed Passwords:** Securely stored with `passport-local-mongoose`
 - 🛡️ **Session Management:** Via `express-session` with secret keys
@@ -119,7 +119,7 @@
 ## 🗂️ Project Structure
 
 ```bash
-RoomWati/
+SKN-ACKOMMODATION/
 ├── controllers/       # Route handlers
 │   ├── listings.js
 │   ├── reviews.js
@@ -169,8 +169,8 @@ RoomWati/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/shourya9058/RoomWati.git
-   cd RoomWati
+   git clone https://github.com/shourya9058/SKN-ACKOMMODATION.git
+   cd SKN-ACKOMMODATION
    ```
 
 2. Install dependencies:
@@ -199,7 +199,7 @@ RoomWati/
 
 ## 📸 App Screenshots
 
-> A glimpse into RoomWati's user interface and key workflows.
+> A glimpse into SKN-ACKOMMODATION's user interface and key workflows.
 
 <p align="center">
   <img src="public/screenshots/homepage.png" alt="🏠 Homepage" width="700"/>
@@ -252,3 +252,4 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 <div align="center">
   Made with ❤️ by Vicky Kumar
 </div>
+

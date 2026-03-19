@@ -63,7 +63,7 @@ module.exports.ListingSchema = Joi.object({
       .valid("students", "professionals", "family", "couples", "any")
       .required(),
 
-    immediateAvailability: booleanLike.required(),
+    immediateAvailability: booleanLike.optional().default(false),
     availableFrom: Joi.alternatives()
       .try(
         Joi.date(),

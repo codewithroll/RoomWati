@@ -24,14 +24,31 @@ const emailjs = require("emailjs-com");
 
 const Listing = require("./models/listing.js"); // add this near your imports
 const initData = require("./init/data.js"); // this too, at the top with imports
+const hasGoogleOAuth =
+  Boolean(process.env.GOOGLE_CLIENT_ID) &&
+  Boolean(process.env.GOOGLE_CLIENT_SECRET);
+const hasFacebookOAuth =
+  Boolean(process.env.FACEBOOK_APP_ID) &&
+  Boolean(process.env.FACEBOOK_APP_SECRET);
+const port = Number(process.env.PORT) || 8080;
+const dbUrl =
+  process.env.ATLASDB_URL || "mongodb://127.0.0.1:27017/wanderlust";
+const sessionSecret = process.env.SESSION_SECRET || "dev-session-secret";
+
+if (!process.env.ATLASDB_URL) {
+  console.warn("ATLASDB_URL not set. Falling back to local MongoDB.");
+}
+
+if (!process.env.SESSION_SECRET) {
+  console.warn(
+    "SESSION_SECRET not set. Using development fallback secret.",
+  );
+}
 
 // Initialize EmailJS
-emailjs.init(process.env.EMAILJS_PUBLIC_KEY);
-
-port = 8080;
-
-// let mongo_url = "mongodb://127.0.0.1:27017/wanderlust";
-dbUrl = process.env.ATLASDB_URL;
+if (process.env.EMAILJS_PUBLIC_KEY) {
+  emailjs.init(process.env.EMAILJS_PUBLIC_KEY);
+}
 
 main()
   .then(() => {
@@ -55,7 +72,7 @@ app.use(methodOverride("_method"));
 app.use(express.static(path.join(__dirname, "/public")));
 
 const sessionOptions = {
-  secret: process.env.SESSION_SECRET,
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -156,35 +173,35 @@ app.get("/reset-password", (req, res) => {
   res.render("users/reset-password", { token });
 });
 
-// 👇 Create "Team Roomwati" user route
-app.get("/create-roomwati-user", async (req, res) => {
+// 👇 Create "Team SKN-ACKOMMODATION" user route
+app.get("/create-SKN-ACKOMMODATION-user", async (req, res) => {
   try {
     const newUser = new User({
-      email: "team@roomwati.com",
-      username: "Team Roomwati",
-      bio: "We're the RoomWati team, powering seamless stays and unique spaces.",
+      email: "team@SKN-ACKOMMODATION.com",
+      username: "Team SKN-ACKOMMODATION",
+      bio: "We're the SKN-ACKOMMODATION team, powering seamless stays and unique spaces.",
       image: {
         url: "https://cdn.pixabay.com/photo/2018/11/13/22/01/avatar-3814081_1280.png",
         filename: "default-avatar",
       },
       coverImage: {
-        url: "https://res.cloudinary.com/dxqjlxgsh/image/upload/v1703420360/RoomWati/default-cover_kxn8dr.jpg",
+        url: "https://res.cloudinary.com/dxqjlxgsh/image/upload/v1703420360/SKN-ACKOMMODATION/default-cover_kxn8dr.jpg",
         filename: "default-cover",
       },
     });
 
-    const registeredUser = await User.register(newUser, "roomwati123");
-    res.send(`✅ Created user 'Team Roomwati' with ID: ${registeredUser._id}`);
+    const registeredUser = await User.register(newUser, "SKN-ACKOMMODATION123");
+    res.send(`✅ Created user 'Team SKN-ACKOMMODATION' with ID: ${registeredUser._id}`);
   } catch (err) {
-    console.error("❌ Error creating Team Roomwati user:", err);
-    res.status(500).send("❌ Could not create Team Roomwati user.");
+    console.error("❌ Error creating Team SKN-ACKOMMODATION user:", err);
+    res.status(500).send("❌ Could not create Team SKN-ACKOMMODATION user.");
   }
 });
 
-// 👇 Seed route using "Team Roomwati" user ID
+// 👇 Seed route using "Team SKN-ACKOMMODATION" user ID
 app.get("/seed", async (req, res) => {
   try {
-    const ownerId = "6862f0a5e13ae10af456daa7"; // <== Paste Team Roomwati _id here
+    const ownerId = "6862f0a5e13ae10af456daa7"; // <== Paste Team SKN-ACKOMMODATION _id here
     await Listing.deleteMany({});
 
     const listings = initData.data.map((obj) => ({
@@ -212,36 +229,60 @@ app.get("/delete-seed", async (req, res) => {
 });
 
 // GOOGLE
-app.get(
-  "/auth/google",
-  passport.authenticate("google", { scope: ["profile", "email"] }),
-);
+if (hasGoogleOAuth) {
+  app.get(
+    "/auth/google",
+    passport.authenticate("google", { scope: ["profile", "email"] }),
+  );
 
-app.get(
-  "/auth/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "/signup",
-  }),
-  (req, res) => {
-    res.redirect("/listings");
-  },
-);
+  app.get(
+    "/auth/google/callback",
+    passport.authenticate("google", {
+      failureRedirect: "/signup",
+    }),
+    (req, res) => {
+      res.redirect("/listings");
+    },
+  );
+} else {
+  app.get("/auth/google", (req, res) => {
+    req.flash("error", "Google login is not configured right now.");
+    res.redirect("/login");
+  });
+
+  app.get("/auth/google/callback", (req, res) => {
+    req.flash("error", "Google login is not configured right now.");
+    res.redirect("/login");
+  });
+}
 
 // FACEBOOK
-app.get(
-  "/auth/facebook",
-  passport.authenticate("facebook", { scope: ["email"] }),
-);
+if (hasFacebookOAuth) {
+  app.get(
+    "/auth/facebook",
+    passport.authenticate("facebook", { scope: ["email"] }),
+  );
 
-app.get(
-  "/auth/facebook/callback",
-  passport.authenticate("facebook", {
-    failureRedirect: "/signup",
-  }),
-  (req, res) => {
-    res.redirect("/listings");
-  },
-);
+  app.get(
+    "/auth/facebook/callback",
+    passport.authenticate("facebook", {
+      failureRedirect: "/signup",
+    }),
+    (req, res) => {
+      res.redirect("/listings");
+    },
+  );
+} else {
+  app.get("/auth/facebook", (req, res) => {
+    req.flash("error", "Facebook login is not configured right now.");
+    res.redirect("/login");
+  });
+
+  app.get("/auth/facebook/callback", (req, res) => {
+    req.flash("error", "Facebook login is not configured right now.");
+    res.redirect("/login");
+  });
+}
 
 // Handle 404 errors
 app.all("*", (req, res, next) => {
@@ -260,3 +301,4 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log(`Listening at port:  ${port}`);
 });
+

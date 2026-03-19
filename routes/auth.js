@@ -1,4 +1,4 @@
-const express = require("express");
+﻿const express = require("express");
 const router = express.Router();
 const User = require("../models/user.js");
 const crypto = require("crypto");
@@ -7,7 +7,7 @@ const { isLoggedIn } = require("../middleware");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 
-const EMAIL_USER = "roomwati.response@gmail.com";
+const EMAIL_USER = "SKN-ACKOMMODATION.response@gmail.com";
 const EMAIL_PASS = "bmlz kxsx kpen jsar";
 
 const transporter = nodemailer.createTransport({
@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 async function sendMail({ to, subject, text, html }) {
   return transporter.sendMail({
-    from: `RoomWati <${EMAIL_USER}>`,
+    from: `SKN-ACKOMMODATION <${EMAIL_USER}>`,
     to,
     subject,
     text,
@@ -703,3 +703,4 @@ router.post(
 );
 
 module.exports = router;
+

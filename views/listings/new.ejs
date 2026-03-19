@@ -42,13 +42,17 @@
       <div class="form-group">
         <label for="image">Add photos of your place</label>
         <div class="image-upload-container">
-          <input type="file" name="listing[image]" class="form-control" />
+          <input
+            type="file"
+            name="listing[image]"
+            class="form-control"
+            accept="image/*"
+          />
 
           <div class="image-tips">
             Great photos increase your chances of getting bookings
           </div>
         </div>
-        required
       </div>
 
       <!-- Price and Country -->
