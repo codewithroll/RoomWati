@@ -10,6 +10,20 @@ const hasFacebookOAuth =
   Boolean(process.env.FACEBOOK_APP_ID) &&
   Boolean(process.env.FACEBOOK_APP_SECRET);
 
+async function generateUniqueUsername(baseName) {
+  const normalizedBase =
+    (baseName || "user").replace(/\s+/g, "").toLowerCase() || "user";
+  let username = normalizedBase;
+  let counter = 1;
+
+  while (await User.findOne({ username })) {
+    username = `${normalizedBase}${counter}`;
+    counter += 1;
+  }
+
+  return username;
+}
+
 // =====================
 // 🔐 SERIALIZE / DESERIALIZE
 // =====================
@@ -49,7 +63,7 @@ if (hasGoogleOAuth) {
 
           // create new user
           const newUser = new User({
-            username: profile.displayName.replace(/\s+/g, "").toLowerCase(),
+            username: await generateUniqueUsername(profile.displayName),
             email: profile.emails ? profile.emails[0].value : undefined,
             googleId: profile.id,
             image: {
@@ -94,7 +108,7 @@ if (hasFacebookOAuth) {
           }
 
           const newUser = new User({
-            username: profile.displayName.replace(/\s+/g, "").toLowerCase(),
+            username: await generateUniqueUsername(profile.displayName),
             email: profile.emails ? profile.emails[0].value : undefined,
             facebookId: profile.id,
             image: {

@@ -274,3 +274,19 @@
     </form>
   </div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector('form[action="/listings"]');
+    const submitButton = form?.querySelector('button[type="submit"]');
+
+    if (!form || !submitButton) return;
+
+    form.addEventListener("submit", function () {
+      if (!form.checkValidity()) return;
+      if (submitButton.disabled) return;
+
+      submitButton.disabled = true;
+      submitButton.textContent = "Creating...";
+    });
+  });
+</script>

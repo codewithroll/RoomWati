@@ -1,61 +1,73 @@
 ﻿
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top">
-        <div class="container">
-            <!-- Brand -->
-            <a class="navbar-brand d-flex align-items-center" href="/listings/home">
-    <img src="/images/SKN-ACKOMMODATIONLogo.png" alt="Logo" class="brand-icon" />
-    <p class="brand-text mb-0 ms-2"><b>SKN_Accomodation</b>.com</p>
-</a>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg fixed-top border-b border-slate-200/70 bg-white/95 backdrop-blur-md">
+  <div class="container flex items-center justify-between px-3 sm:px-4 lg:px-6">
+    <a class="navbar-brand d-flex align-items-center" href="/listings/home">
+      <img src="/images/SKN-ACKOMMODATIONLogo.png" alt="Logo" class="brand-icon" />
+      <p class="brand-text mb-0 ms-2 hidden sm:block"><b>SKN_Accomodation</b>.com</p>
+    </a>
 
+    <button
+      class="navbar-toggler rounded-lg border border-slate-200 p-2 text-slate-700 shadow-sm"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarContent"
+      aria-controls="navbarContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
 
-            <!-- Mobile Toggle -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <i class="fas fa-bars"></i>
-            </button>
+    <div class="collapse navbar-collapse" id="navbarContent">
+      <div class="navbar-nav mx-auto gap-1 lg:gap-2">
+        <a class="nav-link active text-sm lg:text-base" href="/listings/home">Home</a>
+        <a class="nav-link text-sm lg:text-base" href="/listings">View Listings</a>
+        <a class="nav-link text-sm lg:text-base" href="/listings/new">List Your Space</a>
+      </div>
 
-            <!-- Navigation Items -->
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <div class="navbar-nav mx-auto">
-                    <a class="nav-link active" href="/listings/home">Home</a>
-                    <a class="nav-link" href="/listings">View Listings</a>
-                    <a class="nav-link" href="#">Contact Us</a>
-                </div>
-
-                <!-- Authentication Section -->
-                <div class="d-flex align-items-center gap-2">
-                    <% if(!currentUser) { %>
-                        <a href="/login" class="auth-btn btn btn-outline-dark">Log in</a>
-                        <a href="/signup" class="auth-btn btn btn-signup">Sign up</a>
-                    <% } else { %>
-                        <div class="dropdown">
-                            <a class="nav-link dropdown-toggle user-profile-icon" href="#" role="button" 
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <div class="user-avatar">
-                                    <% if(currentUser.image) { %>
-                                        <img src="<%= currentUser.image.url ? currentUser.image.url : currentUser.image %>" 
-                                             alt="Profile" 
-                                             class="rounded-circle"
-                                             onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fas fa-user-circle\'></i>'">
-                                    <% } else { %>
-                                        <i class="fas fa-user-circle"></i>
-                                    <% } %>
-                                </div>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#">Profile</a></li>
-                                <li><a class="dropdown-item" href="#">Settings</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form action="/logout" method="POST">
-                                        <button class="dropdown-item text-danger">Log out</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    <% } %>
-                </div>
-    </nav>
+      <div class="d-flex flex-wrap items-center gap-2 sm:flex-nowrap">
+        <% if(!currentUser) { %>
+          <a href="/login" class="auth-btn btn btn-outline-dark inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold">Log in</a>
+          <a href="/signup" class="auth-btn btn btn-signup inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold">Sign up</a>
+        <% } else { %>
+          <div class="dropdown">
+            <a
+              class="nav-link dropdown-toggle user-profile-icon"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <div class="user-avatar">
+                <% if(currentUser.image) { %>
+                  <img
+                    src="<%= currentUser.image.url ? currentUser.image.url : currentUser.image %>"
+                    alt="Profile"
+                    class="rounded-circle"
+                    onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fas fa-user-circle\'></i>'"
+                  >
+                <% } else { %>
+                  <i class="fas fa-user-circle"></i>
+                <% } %>
+              </div>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="/profile">Profile</a></li>
+              <li><a class="dropdown-item" href="/profile/edit">Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form action="/logout" method="POST">
+                  <button class="dropdown-item text-danger">Log out</button>
+                </form>
+              </li>
+            </ul>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</nav>
 
     <style>
         /* Custom Styles */

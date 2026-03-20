@@ -24,6 +24,26 @@
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
       rel="stylesheet"
     />
+    <script>
+      tailwind = {
+        config: {
+          corePlugins: {
+            preflight: false,
+          },
+          theme: {
+            extend: {
+              colors: {
+                brand: {
+                  DEFAULT: "#FF385C",
+                  dark: "#E00B41",
+                },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
     <%- include("../includes/navbarHome.ejs") %>

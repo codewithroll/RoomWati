@@ -224,82 +224,88 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    // Initialize EmailJS with your public key from environment
-    (function () {
-      emailjs.init(
-        "<%= process.env.EMAILJS_PUBLIC_KEY || 'JchnnKE5CE5umKm0i' %>",
-      );
-    })();
-
-    // Tab switching
-    const passwordTab = document.getElementById("password-tab");
-    const otpTab = document.getElementById("otp-tab");
-    const passwordForm = document.getElementById("passwordLoginForm");
-    const otpForm = document.getElementById("otpLoginForm");
-    const otpSection = document.getElementById("otpSection");
-    const otpInput = document.getElementById("otp");
-    const sendOtpBtn = document.getElementById("sendOtpBtn");
-    const verifyOtpBtn = document.getElementById("verifyOtpBtn");
-    const resendOtpBtn = document.getElementById("resendOtpBtn");
-    const otpTimer = document.getElementById("otpTimer");
-    const loginError = document.getElementById("loginError");
-    let otpCountdown = 120; // 2 minutes in seconds
-    let otpTimerInterval;
-    let otpEmail = "";
-
-    // Function to safely add event listeners
-    function safeAddEventListener(element, event, handler) {
-      if (element) {
-        element.addEventListener(event, handler);
-      }
-    }
-
-    // Show/hide password toggle
-    document.querySelectorAll(".toggle-password").forEach((btn) => {
-      safeAddEventListener(btn, "click", function () {
-        const input = this.previousElementSibling;
-        if (input) {
-          const type =
-            input.getAttribute("type") === "password" ? "text" : "password";
-          input.setAttribute("type", type);
-          const icon = this.querySelector("i");
-          if (icon) {
-            icon.classList.toggle("fa-eye");
-            icon.classList.toggle("fa-eye-slash");
-          }
-        }
-      });
-    });
-
-    // Handle tab switching
-    if (passwordTab && otpTab) {
-      safeAddEventListener(passwordTab, "click", () => {
-        if (passwordForm) passwordForm.style.display = "block";
-        if (otpForm) otpForm.style.display = "none";
-        resetOtpForm();
-      });
-
-      safeAddEventListener(otpTab, "click", () => {
-        if (passwordForm) passwordForm.style.display = "none";
-        otpForm.style.display = "block";
-      });
-    }
-
-    // Password login form submission
     const passwordLoginForm = document.getElementById("passwordLoginForm");
     const passwordSpinner = document.getElementById("passwordSpinner");
     const passwordButtonText = document.getElementById("passwordButtonText");
     const passwordError = document.getElementById("passwordError");
+    const otpLoginForm = document.getElementById("otpLoginForm");
+    const otpFields = document.getElementById("otpFields");
+    const otpInput = document.getElementById("otp");
+    const sendOtpBtn = document.getElementById("sendOtpBtn");
+    const verifyOtpBtn = document.getElementById("verifyOtpBtn");
+    const otpSpinner = document.getElementById("otpSpinner");
+    const otpButtonText = document.getElementById("otpButtonText");
+    const otpError = document.getElementById("otpError");
+    const otpSuccess = document.getElementById("otpSuccess");
+    const resendOtpLink = document.getElementById("resendOtp");
+    const resendTimer = document.getElementById("resendTimer");
+    const otpVerifySpinner = document.getElementById("otpVerifySpinner");
+    const otpVerifyButtonText = document.getElementById("otpVerifyButtonText");
+    const googleBtn = document.querySelector(".google-btn");
+    const facebookBtn = document.querySelector(".facebook-btn");
+    const appleBtn = document.querySelector(".apple-btn");
+
+    let countdown = 0;
+    let countdownInterval;
+
+    function showPasswordError(message) {
+      passwordError.textContent = message;
+      passwordError.classList.remove("d-none");
+    }
+
+    function showOtpError(message) {
+      otpError.textContent = message;
+      otpError.classList.remove("d-none");
+      otpSuccess.classList.add("d-none");
+    }
+
+    function showOtpSuccess(message) {
+      otpSuccess.textContent = message;
+      otpSuccess.classList.remove("d-none");
+      otpError.classList.add("d-none");
+    }
+
+    function startResendTimer() {
+      clearInterval(countdownInterval);
+      countdown = 120;
+      updateResendButton();
+
+      countdownInterval = setInterval(() => {
+        countdown--;
+        updateResendButton();
+
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
+    }
+
+    function updateResendButton() {
+      if (!resendOtpLink || !resendTimer) return;
+
+      if (countdown > 0) {
+        const minutes = Math.floor(countdown / 60);
+        const seconds = countdown % 60;
+        resendOtpLink.classList.add("disabled");
+        resendOtpLink.style.pointerEvents = "none";
+        resendTimer.textContent = `(${minutes}:${seconds
+          .toString()
+          .padStart(2, "0")})`;
+      } else {
+        resendOtpLink.classList.remove("disabled");
+        resendOtpLink.style.pointerEvents = "auto";
+        resendTimer.textContent = "";
+      }
+    }
 
     if (passwordLoginForm) {
       passwordLoginForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 
         const formData = new FormData(passwordLoginForm);
-        const username = formData.get("username");
-        const password = formData.get("password");
+        const username = String(formData.get("username") || "").trim();
+        const password = String(formData.get("password") || "");
 
-        // Show loading state
         passwordSpinner.classList.remove("d-none");
         passwordButtonText.textContent = "Logging in...";
         passwordError.classList.add("d-none");
@@ -314,21 +320,14 @@
             credentials: "same-origin",
           });
 
-          if (response.redirected) {
-            window.location.href = response.url;
-          } else {
-            const result = await response.json();
-            if (result.requiresOtp) {
-              // Redirect to OTP verification
-              window.location.href = `/verify-otp?email=${encodeURIComponent(
-                result.email,
-              )}`;
-            } else {
-              showPasswordError(
-                result.message || "Invalid username or password",
-              );
-            }
+          const result = await response.json();
+
+          if (!response.ok || !result.success) {
+            showPasswordError(result.message || "Invalid username or password");
+            return;
           }
+
+          window.location.href = result.redirectUrl || "/listings";
         } catch (error) {
           console.error("Login error:", error);
           showPasswordError("An error occurred. Please try again.");
@@ -339,21 +338,7 @@
       });
     }
 
-    // OTP login form submission
-    const otpLoginForm = document.getElementById("otpLoginForm");
-    const otpFields = document.getElementById("otpFields");
-    const otpSubmitBtn = document.getElementById("otpSubmitBtn");
-    const otpSpinner = document.getElementById("otpSpinner");
-    const otpButtonText = document.getElementById("otpButtonText");
-    const otpError = document.getElementById("otpError");
-    const otpSuccess = document.getElementById("otpSuccess");
-    const resendOtpLink = document.getElementById("resendOtp");
-    const resendTimer = document.getElementById("resendTimer");
-
-    let countdown = 0;
-    // OTP Login Form Submission
-    if (otpForm) {
-      // Handle OTP request
+    if (otpLoginForm && sendOtpBtn && verifyOtpBtn) {
       sendOtpBtn.addEventListener("click", async function (e) {
         e.preventDefault();
         const emailInput = document.getElementById("email");
@@ -365,14 +350,14 @@
         const email = emailInput.value.trim();
 
         if (!email) {
-          showError("Please enter your email address");
+          showOtpError("Please enter your email address");
           return;
         }
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-          showError("Please enter a valid email address");
+          showOtpError("Please enter a valid email address");
           return;
         }
 
@@ -396,21 +381,18 @@
           console.log("OTP response:", data);
 
           if (data.success) {
-            // Show OTP input and start timer
-            if (otpSection) otpSection.classList.remove("d-none");
-            startOtpTimer();
-            showSuccess("OTP sent to your email");
-            otpEmail = email;
             otpFields.style.display = "block";
             sendOtpBtn.classList.add("d-none");
             verifyOtpBtn.classList.remove("d-none");
+            startResendTimer();
+            showOtpSuccess("OTP sent to your email");
             if (otpInput) otpInput.focus();
           } else {
-            showError(data.message || "Failed to send OTP. Please try again.");
+            showOtpError(data.message || "Failed to send OTP. Please try again.");
           }
         } catch (error) {
           console.error("Error sending OTP:", error);
-          showError(
+          showOtpError(
             "Failed to send OTP. Please check your connection and try again.",
           );
         } finally {
@@ -428,7 +410,7 @@
         if (verifyOtpBtn.disabled) return;
         const emailInput = document.getElementById("email");
         if (!emailInput || !otpInput) {
-          showError(
+          showOtpError(
             "An error occurred. Please refresh the page and try again.",
           );
           return;
@@ -436,7 +418,7 @@
         const email = emailInput.value.trim();
         const otpCode = otpInput.value.trim();
         if (!otpCode) {
-          showError("Please enter the OTP");
+          showOtpError("Please enter the OTP");
           return;
         }
         verifyOtpBtn.disabled = true;
@@ -509,7 +491,6 @@
       }
     }
 
-    // Password visibility toggle
     document.querySelectorAll(".password-toggle").forEach((button) => {
       button.addEventListener("click", function () {
         const targetId = this.getAttribute("data-target") || "password";
@@ -528,8 +509,7 @@
       });
     });
 
-    // Auto-advance OTP input
-    if (otpInput) {
+    if (otpInput && otpLoginForm) {
       otpInput.addEventListener("input", function () {
         this.value = this.value.replace(/[^0-9]/g, "");
 
@@ -541,121 +521,17 @@
       });
     }
 
-    // Helper functions
-    function showError(message) {
-      if (loginError) {
-        loginError.textContent = message;
-        loginError.classList.remove("d-none");
+    googleBtn?.addEventListener("click", () => {
+      window.location.href = "/auth/google";
+    });
 
-        // Hide error after 5 seconds
-        setTimeout(() => {
-          loginError.classList.add("d-none");
-        }, 5000);
-      }
-    }
+    facebookBtn?.addEventListener("click", () => {
+      window.location.href = "/auth/facebook";
+    });
 
-    function showSuccess(message) {
-      // You can implement a success message display here
-      console.log("Success:", message);
-    }
-
-    function isValidEmail(email) {
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return re.test(email);
-    }
-
-    function startOtpTimer() {
-      clearInterval(otpTimerInterval);
-      otpCountdown = 120;
-      resendOtp.classList.add("disabled");
-      resendOtp.style.pointerEvents = "none";
-      resendTimer.textContent = `(2:00)`;
-      otpTimerInterval = setInterval(() => {
-        otpCountdown--;
-        const mins = Math.floor(otpCountdown / 60);
-        const secs = otpCountdown % 60;
-        resendTimer.textContent = `(${mins}:${secs
-          .toString()
-          .padStart(2, "0")})`;
-        if (otpCountdown <= 0) {
-          clearInterval(otpTimerInterval);
-          resendOtp.classList.remove("disabled");
-          resendOtp.style.pointerEvents = "auto";
-          resendTimer.textContent = "";
-        }
-      }, 1000);
-    }
-
-    function updateOtpTimer() {
-      const minutes = Math.floor(otpCountdown / 60);
-      const seconds = otpCountdown % 60;
-      otpTimer.textContent = `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-    }
-
-    function resetOtpForm() {
-      if (otpSection) otpSection.classList.add("d-none");
-      if (otpInput) otpInput.value = "";
-      clearInterval(otpTimerInterval);
-      otpCountdown = 120;
-      if (resendOtpBtn) resendOtpBtn.disabled = true;
-      if (otpTimer) otpTimer.textContent = "2:00";
-    }
-
-    // Handle resend OTP
-    if (resendOtpBtn) {
-      resendOtpBtn.addEventListener("click", function () {
-        const email = document.getElementById("email").value.trim();
-        if (email) {
-          // Trigger click on send OTP button
-          sendOtpBtn.click();
-        }
-      });
-    }
-
-    function showOtpError(message) {
-      otpError.textContent = message;
-      otpError.classList.remove("d-none");
-      otpSuccess.classList.add("d-none");
-    }
-
-    function showOtpSuccess(message) {
-      otpSuccess.textContent = message;
-      otpSuccess.classList.remove("d-none");
-      otpError.classList.add("d-none");
-    }
-
-    function startResendTimer() {
-      clearInterval(countdownInterval);
-      countdown = 120; // 2 minutes
-      updateResendButton();
-
-      countdownInterval = setInterval(() => {
-        countdown--;
-        updateResendButton();
-
-        if (countdown <= 0) {
-          clearInterval(countdownInterval);
-        }
-      }, 1000);
-    }
-
-    function updateResendButton() {
-      if (!resendOtpLink || !resendTimer) return;
-
-      if (countdown > 0) {
-        const minutes = Math.floor(countdown / 60);
-        const seconds = countdown % 60;
-        resendOtpLink.classList.add("disabled");
-        resendOtpLink.style.pointerEvents = "none";
-        resendTimer.textContent = `(${minutes}:${seconds
-          .toString()
-          .padStart(2, "0")})`;
-      } else {
-        resendOtpLink.classList.remove("disabled");
-        resendOtpLink.style.pointerEvents = "auto";
-        resendTimer.textContent = "";
-      }
-    }
+    appleBtn?.addEventListener("click", () => {
+      showOtpError("Apple login is not configured right now.");
+    });
   });
 </script>
 

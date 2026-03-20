@@ -1115,4 +1115,10 @@ const sampleListings = [
   },
 ];
 
-module.exports = { data: sampleListings };
+if (typeof window !== "undefined") {
+  window.sampleListings = sampleListings;
+}
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = { data: sampleListings };
+}

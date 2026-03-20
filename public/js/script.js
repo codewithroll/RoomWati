@@ -172,6 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
               icon.classList.remove("far");
               icon.classList.add("fas");
               this.classList.add("active");
+              this.closest(".listing-col")?.setAttribute("data-is-favorite", "true");
               showToast("Added to favorites!", "added");
 
               // Update favorite count from server response if available
@@ -183,6 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
               icon.classList.remove("fas");
               icon.classList.add("far");
               this.classList.remove("active");
+              this.closest(".listing-col")?.setAttribute("data-is-favorite", "false");
               showToast("Removed from favorites", "removed");
 
               // Update favorite count from server response if available

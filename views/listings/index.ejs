@@ -71,52 +71,52 @@
     z-index: 11; /* Ensure it's above the badge */
   }
 </style>
-<div class="listings-container">
-  <div class="filters-bar">
-    <div class="category-filters">
-      <div class="filter-scroll">
-        <button class="filter-btn active">
+<div class="listings-container px-3 sm:px-4 lg:px-6">
+  <div class="filters-bar flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div class="category-filters w-full">
+      <div class="filter-scroll items-start md:items-center">
+        <button class="filter-btn active min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="all">
           <i class="fas fa-bed"></i>
           <span>All Rooms</span>
         </button>
         <% if (currentUser) { %>
-        <button class="filter-btn">
+        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="favorites">
           <i class="fas fa-heart"></i>
           <span>My Favorites</span>
         </button>
         <% } %>
-        <button class="filter-btn">
+        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="single">
           <i class="fas fa-user"></i>
           <span>Single</span>
         </button>
-        <button class="filter-btn">
+        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="shared">
           <i class="fas fa-users"></i>
           <span>Shared</span>
         </button>
-        <button class="filter-btn">
+        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="furnished">
           <i class="fas fa-couch"></i>
           <span>Furnished</span>
         </button>
-        <button class="filter-btn">
+        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="students">
           <i class="fas fa-graduation-cap"></i>
           <span>For Students</span>
         </button>
-        <button class="filter-btn">
+        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="professionals">
           <i class="fas fa-briefcase"></i>
           <span>For Professionals</span>
         </button>
-        <button class="filter-btn">
+        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="any-gender">
           <i class="fas fa-venus-mars"></i>
           <span>Any Gender</span>
         </button>
-        <button class="filter-btn">
+        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="immediate">
           <i class="fas fa-calendar-check"></i>
           <span>Immediate</span>
         </button>
       </div>
     </div>
-    <div class="filter-options">
-      <button class="show-filters-btn" id="advanced-filters-btn">
+    <div class="filter-options w-full justify-between md:w-auto md:justify-end">
+      <button class="show-filters-btn rounded-xl !px-4 !py-2 text-sm font-medium" id="advanced-filters-btn">
         <i class="fas fa-sliders-h"></i>
         <span>More Filters</span>
       </button>
@@ -345,18 +345,18 @@
           </div>
 
           <div class="filter-buttons">
-            <button type="button" class="reset-btn">Reset All</button>
-            <button type="submit" class="apply-btn">Apply Filters</button>
+            <button type="button" class="reset-btn rounded-lg px-4 py-2 text-sm font-semibold">Reset All</button>
+            <button type="submit" class="apply-btn rounded-lg px-4 py-2 text-sm font-semibold">Apply Filters</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-  <div class="row listings-grid">
+  <div class="row listings-grid !mx-0 !grid !grid-cols-1 sm:!grid-cols-2 xl:!grid-cols-3 !gap-4 sm:!gap-5">
     <% for(let listing of allListings) { %>
     <div
-      class="col-lg-4 col-md-6 col-sm-12 listing-col"
+      class="col-lg-4 col-md-6 col-sm-12 listing-col !w-full !max-w-full !px-0 flex flex-col"
       data-listing-id="<%= listing._id %>"
       data-is-favorite="<%= listing.isFavorite || false %>"
       data-room-type="<%= listing.roomType || 'single' %>"
@@ -367,16 +367,15 @@
       data-location="<%= listing.location || '' %>"
       data-availability="<%= listing.immediateAvailability ? 'immediate' : 'later' %>"
       data-available-from="<%= listing.availableFrom || '' %>"
-      style="display: flex; flex-direction: column;"
     >
-      <a href="/listings/<%= listing._id %>" class="listing-link flex-grow-1 d-flex flex-column">
-        <div class="listing-card" style="height: 100%; display: flex; flex-direction: column;">
-          <div class="image-carousel">
+      <a href="/listings/<%= listing._id %>" class="listing-link flex-grow-1 d-flex h-full flex-column">
+        <div class="listing-card !h-auto h-full flex flex-col overflow-hidden rounded-xl">
+          <div class="image-carousel !h-56 sm:!h-64 lg:!h-72">
             <div class="carousel-inner">
               <!-- Main image -->
               <img
                 src="<%= listing.image.url %>"
-                class="carousel-img active"
+                class="carousel-img active !h-56 sm:!h-64 lg:!h-72"
                 alt="<%= listing.title %>"
               />
 
@@ -385,7 +384,7 @@
               listing.images.forEach((img, index) => { %>
               <img
                 src="<%= img.url %>"
-                class="carousel-img"
+                class="carousel-img !h-56 sm:!h-64 lg:!h-72"
                 alt="<%= listing.title %> - image <%= index + 2 %>"
               />
               <% }) %> <% } %>
@@ -429,17 +428,17 @@
             <% } %>
             <!-- End 5-Star Badge -->
             <button
-              class="favorite-btn <%= currUser && currUser.favorites && currUser.favorites.includes(listing._id.toString()) ? 'active' : '' %>"
+              class="favorite-btn <%= listing.isFavorite ? 'active' : '' %>"
               aria-label="Toggle favorites"
               data-listing-id="<%= listing._id %>"
             >
               <i
-                class="<%= currUser && currUser.favorites && currUser.favorites.includes(listing._id.toString()) ? 'fas' : 'far' %> fa-heart"
+                class="<%= listing.isFavorite ? 'fas' : 'far' %> fa-heart"
               ></i>
             </button>
           </div>
 
-          <div class="listing-info p-3 d-flex flex-column" style="flex: 1; min-height: 0;">
+          <div class="listing-info p-3 d-flex flex-1 min-h-0 !h-auto flex-column">
             <div class="listing-header">
               <div class="listing-title-wrapper">
                 <h3 class="listing-title"><%= listing.title %></h3>
@@ -477,20 +476,19 @@
                 <% } %>
               </p>
             </div>
-            <div class="owner-section pt-2 mt-2 border-top" style="margin-bottom: -5px;">
+            <div class="owner-section pt-2 mt-2 border-top -mb-1">
               <% if (listing.owner) { %>
               <div class="d-flex align-items-center">
                 <img
                   src="<%= listing.owner.image && listing.owner.image.url ? listing.owner.image.url : 'https://cdn.pixabay.com/photo/2018/11/13/22/01/avatar-3814081_1280.png' %>"
                   alt="<%= listing.owner.username ? listing.owner.username : 'User' %>'s profile"
-                  class="me-2"
-                  style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #f0f0f0;"
+                  class="me-2 h-7 w-7 rounded-full border border-slate-100 object-cover sm:h-8 sm:w-8"
                 />
                 <div class="d-flex flex-column">
                   <div class="d-flex align-items-center">
                     <span class="small fw-medium text-dark">Hosted by <%= listing.owner.username %></span>
-                    <span class="verified-badge ms-1" style="width: 14px; height: 14px;" title="Verified User">
-                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width: 7px; height: 7px;">
+                    <span class="verified-badge ms-1 !h-3.5 !w-3.5" title="Verified User">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="h-2 w-2">
                         <path d="M19.3 5.3L9 15.6l-4.3-4.3-1.4 1.4 5.7 5.7 11.7-11.7z" fill="#ffffff"/>
                       </svg>
                     </span>
@@ -503,8 +501,7 @@
                 <img
                   src="https://cdn.pixabay.com/photo/2018/11/13/22/01/avatar-3814081_1280.png"
                   alt="User's profile"
-                  class="me-2"
-                  style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #f0f0f0;"
+                  class="me-2 h-7 w-7 rounded-full border border-slate-100 object-cover sm:h-8 sm:w-8"
                 />
                 <div class="d-flex flex-column">
                   <span class="small fw-medium text-dark">Hosted by User</span>
@@ -529,6 +526,7 @@
     const filterButtons = document.querySelectorAll('.filter-btn[data-filter]');
     const listingsGrid = document.querySelector('.listings-grid');
     window.listings = Array.from(document.querySelectorAll('.listing-col'));
+    const listings = window.listings;
     let activeFilter = new URLSearchParams(window.location.search).get('filter') || 'all';
 
     // Debug: Log all listings and their favorite status
@@ -581,7 +579,7 @@
           const noResults = document.createElement('div');
           noResults.className = 'col-12 text-center my-5';
           noResults.innerHTML = `
-            <i class="fas fa-heart-broken fa-3x mb-3" style="color: #ff6b6b;"></i>
+            <i class="fas fa-heart-broken fa-3x mb-3 text-rose-400"></i>
             <h4>No favorite listings yet</h4>
             <p class="text-muted">Save your favorite rooms to see them here</p>
           `;

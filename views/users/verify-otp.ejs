@@ -124,7 +124,7 @@
         if (result.success) {
           if (isPasswordReset) {
             // Redirect to password reset page
-            window.location.href = `/reset-password?token=${encodeURIComponent(result.token)}`;
+            window.location.href = `/reset-password?token=${encodeURIComponent(result.resetToken || result.token)}`;
           } else {
             // Continue with login
             window.location.href = result.redirectTo || '/listings';
@@ -152,7 +152,7 @@
         const response = await fetch('/auth/resend-otp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, purpose: isPasswordReset ? 'password reset' : 'login' })
+          body: JSON.stringify({ email, purpose: isPasswordReset ? 'reset' : 'login' })
         });
         const result = await response.json();
         if (result.success) {

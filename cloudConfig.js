@@ -8,10 +8,11 @@ const hasCloudinaryConfig =
   Boolean(process.env.CLOUDINARY_CLOUD_NAME) &&
   Boolean(process.env.CLOUDINARY_KEY) &&
   Boolean(process.env.CLOUDINARY_SECRET);
+const useCloudinary = process.env.ENABLE_CLOUDINARY === "true";
 
 let storage;
 
-if (hasCloudinaryConfig) {
+if (useCloudinary && hasCloudinaryConfig) {
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_KEY,
@@ -40,13 +41,20 @@ if (hasCloudinaryConfig) {
     },
   });
 
-  console.warn(
-    "Cloudinary credentials missing. Falling back to local uploads in /public/uploads.",
-  );
+  if (hasCloudinaryConfig && !useCloudinary) {
+    console.warn(
+      "Cloudinary credentials were found but ENABLE_CLOUDINARY is not true. Using local uploads.",
+    );
+  } else {
+    console.warn(
+      "Cloudinary credentials missing. Falling back to local uploads in /public/uploads.",
+    );
+  }
 }
 
 module.exports = {
   cloudinary,
   storage,
   hasCloudinaryConfig,
+  useCloudinary,
 };

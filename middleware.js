@@ -5,11 +5,11 @@ const { ListingSchema, reviewSchema } = require("./schema.js");
 
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
-    // Save the full URL for redirection
     req.session.returnTo = req.originalUrl;
     req.flash("error", "Please login to continue");
     return res.redirect("/login");
   }
+
   next();
 };
 
@@ -17,7 +17,6 @@ module.exports.saveRedirectUrl = (req, res, next) => {
   if (req.session.returnTo) {
     res.locals.returnTo = req.session.returnTo;
   } else if (req.query.returnTo) {
-    // Handle returnTo from query parameters if needed
     res.locals.returnTo = req.query.returnTo;
     req.session.returnTo = req.query.returnTo;
   } else if (
@@ -25,26 +24,31 @@ module.exports.saveRedirectUrl = (req, res, next) => {
     req.originalUrl !== "/login" &&
     req.originalUrl !== "/signup"
   ) {
-    // Only save the URL if it's not a login or signup page
     req.session.returnTo = req.originalUrl;
     res.locals.returnTo = req.originalUrl;
   }
-  console.log("saveRedirectUrl - returnTo:", res.locals.returnTo);
+
   next();
 };
 
-//Middleware for authorization
 module.exports.isOwner = async (req, res, next) => {
-  let { id } = req.params;
-  //Authorization for editing
-  let listing = await Listing.findById(id);
+  const { id } = req.params;
+  const listing = await Listing.findById(id);
+
+  if (!listing) {
+    req.flash("error", "Requested listing does not exist!");
+    return res.redirect("/listings");
+  }
+
   if (
     !res.locals.currUser ||
-    !listing.owner._id.equals(res.locals.currUser._id)
+    !listing.owner ||
+    !listing.owner.equals(res.locals.currUser._id)
   ) {
     req.flash("error", "Only owners can edit a listing");
     return res.redirect(`/listings/${id}`);
   }
+
   next();
 };
 
@@ -68,8 +72,8 @@ function convertStringBooleans(listing) {
     const keys = field.split(".");
     let obj = listing;
 
-    for (let i = 0; i < keys.length - 1; i++) {
-      if (!obj[keys[i]]) obj[keys[i]] = {}; // safely build nested object if not exists
+    for (let i = 0; i < keys.length - 1; i += 1) {
+      if (!obj[keys[i]]) obj[keys[i]] = {};
       obj = obj[keys[i]];
     }
 
@@ -84,36 +88,47 @@ function convertStringBooleans(listing) {
 
 module.exports.validateListing = (req, res, next) => {
   if (req.body.listing) {
-    req.body.listing = convertStringBooleans(req.body.listing); // ✅ fix checkbox values
+    req.body.listing = convertStringBooleans(req.body.listing);
   }
 
-  const { error } = ListingSchema.validate(req.body);
+  const { error, value } = ListingSchema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true,
+  });
+
   if (error) {
     const errMsg = error.details.map((el) => el.message).join(",");
     throw new ExpressError(400, errMsg);
-  } else {
-    next();
   }
+
+  req.body = value;
+  next();
 };
 
 module.exports.validateReview = (req, res, next) => {
-  //Joi wali functionality ko middle ware bnane k liye ek function kein daal diya
-  let { error } = reviewSchema.validate(req.body); //JOI will now validate the request body by itself
+  const { error, value } = reviewSchema.validate(req.body, {
+    abortEarly: false,
+    stripUnknown: true,
+  });
+
   if (error) {
-    let errMsg = error.details.map((el) => el.message).join(","); //error ki individual details ko map krenge with it's message and will separate them with ",";
+    const errMsg = error.details.map((el) => el.message).join(",");
     throw new ExpressError(400, errMsg);
-  } else {
-    next();
   }
+
+  req.body = value;
+  next();
 };
 
 module.exports.isReviewAuthor = async (req, res, next) => {
   const { id, reviewId } = req.params;
-
-  // Fetch the review from the Review model
   const review = await Review.findById(reviewId);
 
-  if (!review || !review.author.equals(res.locals.currUser._id)) {
+  if (
+    !review ||
+    !res.locals.currUser ||
+    !review.author.equals(res.locals.currUser._id)
+  ) {
     req.flash("error", "Only the author of this review can delete it");
     return res.redirect(`/listings/${id}`);
   }

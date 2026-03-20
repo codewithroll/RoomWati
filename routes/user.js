@@ -24,128 +24,128 @@ router.get("/login", userController.renderLoginform);
 router.post(
   "/login",
   saveRedirectUrl,
-  (req, res, next) => {
-    console.log("Login attempt for user:", req.body.username || req.body.email);
+  wrapAsync(async (req, res, next) => {
+    const identifier = String(req.body.username || "").trim();
+    const wantsJson =
+      req.is("application/json") || req.get("x-requested-with") === "XMLHttpRequest";
 
-    // Check if this is an OTP login attempt
-    if (req.body.loginMethod === "otp" && req.body.email) {
-      // Forward to auth router for OTP handling
-      return next("route");
+    if (!identifier || !req.body.password) {
+      if (wantsJson) {
+        return res.status(400).json({
+          success: false,
+          message: "Username/email and password are required",
+        });
+      }
+
+      req.flash("error", "Username/email and password are required");
+      return res.redirect("/login");
     }
 
-    // Continue with traditional password login
-    next();
-  },
-  passport.authenticate("local", {
-    failureFlash: true,
-    failureRedirect: "/login",
-    successReturnToOrRedirect: "/listings",
-    successFlash: "Welcome back to Wanderlust!",
-    failureMessage: "Invalid username or password",
+    if (identifier.includes("@")) {
+      const user = await User.findOne({ email: identifier.toLowerCase() });
+      req.body.username = user ? user.username : identifier;
+    }
+
+    passport.authenticate("local", (err, user, info) => {
+      if (err) {
+        return next(err);
+      }
+
+      if (!user) {
+        if (wantsJson) {
+          return res.status(401).json({
+            success: false,
+            message: info?.message || "Invalid username or password",
+          });
+        }
+
+        req.flash("error", info?.message || "Invalid username or password");
+        return res.redirect("/login");
+      }
+
+      req.logIn(user, (loginErr) => {
+        if (loginErr) {
+          return next(loginErr);
+        }
+
+        const redirectUrl = req.session.returnTo || "/listings";
+        delete req.session.returnTo;
+        req.flash("success", "Welcome back to Wanderlust!");
+
+        if (wantsJson) {
+          return res.json({
+            success: true,
+            redirectUrl,
+          });
+        }
+
+        return res.redirect(redirectUrl);
+      });
+    })(req, res, next);
   }),
 );
 
 //logout
 router.get("/logout", userController.logout);
+router.post("/logout", userController.logout);
 
 // Toggle favorite listing
 router.post(
   "/toggle-favorite/:listingId",
   isLoggedIn,
   wrapAsync(async (req, res) => {
-    console.log("Toggle favorite route hit with ID:", req.params.listingId);
-    console.log("User auth status:", req.isAuthenticated());
-
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ error: "Please login first" });
-    }
-
     const { listingId } = req.params;
     const userId = req.user._id;
 
-    try {
-      console.log("Finding user with ID:", userId);
-      const user = await User.findById(userId);
+    const [user, listing] = await Promise.all([
+      User.findById(userId),
+      Listing.findById(listingId),
+    ]);
 
-      if (!user) {
-        console.log("User not found:", userId);
-        return res.status(404).json({ error: "User not found" });
-      }
-
-      // Initialize favorites array if it doesn't exist
-      if (!user.favorites) {
-        console.log("Initializing favorites array for user");
-        user.favorites = [];
-      }
-
-      // Convert ObjectIds to strings for comparison
-      const favoriteIndex = user.favorites.findIndex(
-        (id) => id.toString() === listingId,
-      );
-      console.log("Current favorites:", user.favorites);
-      console.log("Looking for listing:", listingId);
-      console.log("Found at index:", favoriteIndex);
-
-      let result;
-      if (favoriteIndex === -1) {
-        // Add to favorites
-        console.log("Adding to favorites");
-        user.favorites.push(listingId);
-
-        // Increment favorite count on the listing
-        await Listing.findByIdAndUpdate(listingId, {
-          $inc: { favoriteCount: 1 },
-          $addToSet: { favoritedBy: userId },
-        });
-        result = {
-          status: "added",
-          message: "Added to favorites",
-          favoriteCount: (await Listing.findById(listingId)).favoriteCount,
-        };
-      } else {
-        // Remove from favorites
-        console.log("Removing from favorites");
-        user.favorites.splice(favoriteIndex, 1);
-
-        // Decrement favorite count on the listing, ensuring it doesn't go below 0
-        const listing = await Listing.findById(listingId);
-        const newFavoriteCount = Math.max((listing.favoriteCount || 0) - 1, 0);
-
-        const updatedListing = await Listing.findByIdAndUpdate(
-          listingId,
-          {
-            $set: {
-              favoriteCount: newFavoriteCount,
-              favoritedBy: listing.favoritedBy.filter(
-                (id) => id.toString() !== userId.toString(),
-              ),
-            },
-          },
-          { new: true },
-        );
-
-        result = {
-          status: "removed",
-          message: "Removed from favorites",
-          favoriteCount: updatedListing.favoriteCount,
-        };
-      }
-
-      // Use findByIdAndUpdate to avoid validation issues
-      await User.findByIdAndUpdate(
-        userId,
-        {
-          favorites: user.favorites,
-        },
-        { new: true, runValidators: false },
-      );
-
-      console.log("Successfully updated user favorites");
-      res.json(result);
-    } catch (error) {
-      console.error("Error in toggle-favorite:", error);
-      res.status(500).json({ error: error.message || "Internal server error" });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
+
+    if (!listing) {
+      return res.status(404).json({ error: "Listing not found" });
+    }
+
+    const isAlreadyFavorite = (user.favorites || []).some(
+      (favoriteId) => favoriteId.toString() === listingId,
+    );
+
+    if (isAlreadyFavorite) {
+      user.favorites = (user.favorites || []).filter(
+        (favoriteId) => favoriteId.toString() !== listingId,
+      );
+      listing.favoritedBy = (listing.favoritedBy || []).filter(
+        (favoriteUserId) => favoriteUserId.toString() !== userId.toString(),
+      );
+    } else {
+      user.favorites.push(listing._id);
+      if (
+        !(listing.favoritedBy || []).some(
+          (favoriteUserId) => favoriteUserId.toString() === userId.toString(),
+        )
+      ) {
+        listing.favoritedBy.push(userId);
+      }
+    }
+
+    listing.favoriteCount = listing.favoritedBy.length;
+
+    await Promise.all([
+      user.save({ validateBeforeSave: false }),
+      listing.save(),
+    ]);
+
+    res.json({
+      status: isAlreadyFavorite ? "removed" : "added",
+      message: isAlreadyFavorite
+        ? "Removed from favorites"
+        : "Added to favorites",
+      favoriteCount: listing.favoriteCount,
+    });
   }),
 );
 
@@ -236,14 +236,14 @@ router.put(
     user.email = email;
     user.bio = bio;
 
-    if (req.files.profileImage) {
+    if (req.files?.profileImage?.length) {
       user.image = {
         url: req.files.profileImage[0].path,
         filename: req.files.profileImage[0].filename,
       };
     }
 
-    if (req.files.coverImage) {
+    if (req.files?.coverImage?.length) {
       user.coverImage = {
         url: req.files.coverImage[0].path,
         filename: req.files.coverImage[0].filename,
@@ -253,6 +253,37 @@ router.put(
     await user.save();
     req.flash("success", "Profile updated successfully!");
     res.redirect("/profile");
+  }),
+);
+
+router.get(
+  "/api/user/listings",
+  isLoggedIn,
+  wrapAsync(async (req, res) => {
+    const timeframe = Math.max(1, Number(req.query.timeframe) || 30);
+    const since = new Date(Date.now() - timeframe * 24 * 60 * 60 * 1000);
+
+    const listings = await Listing.find({ owner: req.user._id })
+      .populate("reviews")
+      .sort({ updatedAt: -1, createdAt: -1 });
+
+    const payload = listings.map((listing) => ({
+      _id: listing._id,
+      id: listing._id.toString(),
+      title: listing.title,
+      price: listing.price || 0,
+      location: listing.location || "",
+      country: listing.country || "",
+      viewCount: Math.max(0, listing.viewCount || 0),
+      favoriteCount: Math.max(0, listing.favoriteCount || 0),
+      createdAt: listing.createdAt,
+      updatedAt: listing.updatedAt || listing.createdAt,
+      reviews: (listing.reviews || []).filter((review) => {
+        return !review.createdAt || review.createdAt >= since;
+      }),
+    }));
+
+    res.json(payload);
   }),
 );
 

@@ -1,17 +1,17 @@
-﻿<nav class="navbar navbar-expand-md border-bottom sticky-top glassmorphism">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="/listings/home">
+﻿<nav class="navbar navbar-expand-md sticky-top glassmorphism border-b border-slate-200/70 bg-white/90 backdrop-blur-md">
+  <div class="container-fluid !px-3 md:!px-6 flex items-center gap-2">
+    <a class="navbar-brand shrink-0" href="/listings/home">
       <img src="/images/SKN-ACKOMMODATIONLogo.png" alt="Logo" class="brand-icon" />
     </a>
 
     <!-- Search Bar -->
-    <div class="search-container">
-      <div class="search-bar">
+    <div class="search-container flex-1 items-center justify-center">
+      <div class="search-bar w-full max-w-2xl">
         <i class="fa-solid fa-search search-icon"></i>
         <input
           type="text"
           placeholder="Search destinations..."
-          class="search-input"
+          class="search-input text-sm md:text-[15px]"
         />
         <div class="search-divider"></div>
         <div class="search-filter">
@@ -20,7 +20,7 @@
           <span>Any week</span>
           <div class="search-divider"></div>
           <span>Add guests</span>
-          <button class="search-button">
+          <button class="search-button shrink-0">
             <i class="fa-solid fa-search"></i>
           </button>
         </div>
@@ -28,7 +28,7 @@
     </div>
 
     <button
-      class="navbar-toggler custom-toggler"
+      class="navbar-toggler custom-toggler ms-2"
       type="button"
       data-bs-toggle="collapse"
       data-bs-target="#navbarNavAltMarkup"
@@ -43,16 +43,16 @@
       </div>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
-        <a class="nav-link" href="/listings/home">Home</a>
-        <a class="nav-link" href="/listings">All Listings</a>
-        <a class="nav-link" href="/listings/new">Add new Listings</a>
+    <div class="collapse navbar-collapse md:items-center" id="navbarNavAltMarkup">
+      <div class="navbar-nav gap-1 md:gap-2">
+        <a class="nav-link inline-flex items-center justify-center whitespace-nowrap text-sm md:text-[15px]" href="/listings/home">Home</a>
+        <a class="nav-link inline-flex items-center justify-center whitespace-nowrap text-sm md:text-[15px]" href="/listings">All Listings</a>
+        <a class="nav-link inline-flex items-center justify-center whitespace-nowrap text-sm md:text-[15px]" href="/listings/new">Add new Listings</a>
       </div>
-      <div class="navbar-nav ms-auto align-items-center auth-section">
+      <div class="navbar-nav ms-auto align-items-center auth-section gap-2 md:gap-3">
         <% if(!currUser) { %>
-        <a class="nav-link btn-login" href="/login">Login</a>
-        <a class="nav-link btn-register" href="/signup">Register</a>
+        <a class="nav-link btn-login inline-flex items-center justify-center whitespace-nowrap px-4 py-2 text-sm font-semibold" href="/login">Login</a>
+        <a class="nav-link btn-register inline-flex items-center justify-center whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold" href="/signup">Register</a>
         <%} %>
         <div class="dropdown">
           <% if(currUser) { %>
@@ -72,20 +72,20 @@
             </div>
           </a>
           <%} %>
-          <ul class="dropdown-menu dropdown-menu-end glassmorphism-menu">
+          <ul class="dropdown-menu dropdown-menu-end glassmorphism-menu min-w-[12rem]">
             <li>
-              <a class="dropdown-item" href="/profile"
+              <a class="dropdown-item flex items-center gap-2" href="/profile"
                 ><i class="fas fa-user-circle"></i> My Profile</a
               >
             </li>
             <li>
-              <a class="dropdown-item" href="/listings/new"
+              <a class="dropdown-item flex items-center gap-2" href="/listings/new"
                 ><i class="fas fa-plus-circle"></i> New Listing</a
               >
             </li>
             <li><hr class="dropdown-divider" /></li>
             <li>
-              <a class="dropdown-item" href="/logout"
+              <a class="dropdown-item flex items-center gap-2" href="/logout"
                 ><i class="fas fa-sign-out-alt"></i> Logout</a
               >
             </li>
@@ -986,7 +986,7 @@
       <i class="fas fa-search fa-3x text-muted mb-3"></i>
       <h3 class="text-muted">No listings found matching "${query}"</h3>
       <p class="text-muted">Try adjusting your search or exploring our featured listings below</p>
-      <a href="/listings" class="btn btn-outline-primary mt-3">View All Listings</a>
+      <a href="/listings" class="mt-3 inline-flex items-center justify-center rounded-lg border border-rose-300 px-4 py-2 text-sm font-medium text-rose-700 transition hover:bg-rose-50">View All Listings</a>
     `;
       resultsContainer.appendChild(noResults);
     } else {
@@ -1015,12 +1015,16 @@
   function createListingCard(listing) {
     const col = document.createElement("div");
     col.className = "col-12 col-md-6 col-lg-4";
+    const imageUrl =
+      listing.image && typeof listing.image === "object"
+        ? listing.image.url
+        : listing.image;
 
     const cardHtml = `
     <div class="card h-100 listing-card shadow-sm">
       <div class="card-img-wrapper">
         <img src="${
-          listing.image || "/img/default-listing.jpg"
+          imageUrl || "/images/beautifulDestination.jpg"
         }" class="card-img-top" alt="${listing.title}">
         ${
           listing.isFeatured
@@ -1043,19 +1047,15 @@
         }</p>
         <div class="price-container mt-3">
           <span class="price">${
-            listing.price ? "$" + listing.price : "Price on request"
+            listing.price ? "Rs. " + listing.price : "Price on request"
           }</span>
-          ${
-            listing.pricePerNight
-              ? '<span class="price-suffix">/ night</span>'
-              : ""
-          }
+          <span class="price-suffix">/ month</span>
         </div>
       </div>
       <div class="card-footer bg-white">
         <a href="/listings/${
           listing._id
-        }" class="btn btn-sm btn-outline-primary">View Details</a>
+        }" class="inline-flex items-center justify-center rounded-md border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:bg-rose-50 sm:text-sm">View Details</a>
         <div class="rating-container">
           <i class="fas fa-star text-warning"></i>
           <span>${listing.rating || "4.5"}</span>
@@ -1149,7 +1149,7 @@
   if (window.innerWidth < 768) {
     const mobileSearchBtn = document.createElement("button");
     mobileSearchBtn.className =
-      "mobile-search-btn btn btn-sm btn-outline-primary d-md-none";
+      "mobile-search-btn inline-flex h-10 w-10 items-center justify-center rounded-full border border-rose-200 bg-rose-50 text-rose-700 shadow-sm md:hidden";
     mobileSearchBtn.innerHTML = '<i class="fas fa-search"></i>';
 
     // Insert before the hamburger menu
@@ -1167,9 +1167,6 @@
 
   // Initialize the search functionality
   document.addEventListener("DOMContentLoaded", () => {
-    // Fetch initial data
-    fetchListings();
-
     // Add some CSS for elements that might be dynamically added
     const dynamicStyles = document.createElement("style");
     dynamicStyles.textContent = `

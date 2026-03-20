@@ -330,7 +330,7 @@ class AnalyticsDashboard {
       if (!response.ok) throw new Error('Failed to fetch listing data');
       
       const data = await response.json();
-      this.listingsData = data.listings || [];
+      this.listingsData = Array.isArray(data) ? data : data.listings || [];
       this.lastUpdateTime = Date.now();
       
       // Update charts if they exist
@@ -361,7 +361,8 @@ class AnalyticsDashboard {
       // Try to fetch data from the API first
       const response = await fetch(`/api/user/listings?timeframe=${timeframe}`);
       if (response.ok) {
-        this.listingsData = await response.json();
+        const data = await response.json();
+        this.listingsData = Array.isArray(data) ? data : data.listings || [];
       } else {
         // Fallback to DOM data if API fails
         this.extractDataFromDOM();

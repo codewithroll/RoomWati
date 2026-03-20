@@ -1,6 +1,6 @@
 <% layout("/layouts/boilerplate",{ listing: listing }) %>
 <link rel="stylesheet" href="/css/style.css" />
-<div class="container mt-4">
+<div class="container mt-4 px-3 sm:px-4">
   <!-- Listing Header Section -->
   <div class="listing-header">
     <h1 class="listing-title"><%= listing.title %></h1>
@@ -84,11 +84,11 @@
     <!-- Favorite Button -->
     <% if(currentUser) { %>
       <button
-        class="favorite-btn <%= currentUser.favorites && currentUser.favorites.includes(listing._id.toString()) ? 'active' : '' %>"
+        class="favorite-btn <%= isFavorite ? 'active' : '' %>"
         aria-label="Toggle favorites"
         data-listing-id="<%= listing._id %>"
       >
-        <i class="<%= currentUser.favorites && currentUser.favorites.includes(listing._id.toString()) ? 'fas' : 'far' %> fa-heart"></i>
+        <i class="<%= isFavorite ? 'fas' : 'far' %> fa-heart"></i>
       </button>
     <% } else { %>
       <a href="/login" class="favorite-btn" title="Login to add to favorites">
@@ -107,8 +107,7 @@
             <img 
               src="<%= listing.owner.image.url || 'https://cdn.pixabay.com/photo/2018/11/13/22/01/avatar-3814081_1280.png' %>" 
               alt="<%= listing.owner.username %>'s profile picture" 
-              class="rounded-circle"
-              style="width: 50px; height: 50px; object-fit: cover;"
+              class="h-12 w-12 rounded-full object-cover sm:h-[50px] sm:w-[50px]"
             />
           </div>
           <h4 class="mb-0 d-flex align-items-center">Hosted by <i class="mx-1"><%= listing.owner.username %></i>
@@ -380,7 +379,7 @@
   <% if(currUser && currUser._id.equals(listing.owner._id)) {%>
   <div class="admin-buttons mt-4">
     <a
-      class="btn btn-outline-dark"
+      class="btn btn-outline-dark w-full sm:w-auto px-4 py-2 text-sm font-semibold"
       href="/listings/<%= listing._id %>/edit"
     >
       <i class="fas fa-edit"></i> Edit
@@ -390,7 +389,7 @@
       action="/listings/<%=listing._id%>?_method=DELETE"
       class="d-inline"
     >
-      <button type="button" class="btn btn-sm btn-outline-dark btn-delete" data-item-type="listing">
+      <button type="button" class="btn btn-sm btn-outline-dark btn-delete w-full sm:w-auto px-4 py-2 text-sm font-semibold" data-item-type="listing">
         <i class="fas fa-trash-alt"></i> Delete Listing
       </button>
     </form>
@@ -464,7 +463,7 @@
     action="/listings/<%=listing._id%>/reviews/<%=review._id%>?_method=DELETE"
     class="d-inline"
   >
-    <button type="button" class="btn btn-sm btn-outline-dark btn-delete" data-item-type="review">
+    <button type="button" class="btn btn-sm btn-outline-dark btn-delete w-full sm:w-auto px-3 py-2 text-xs font-semibold sm:text-sm" data-item-type="review">
       <i class="fas fa-trash-alt"></i> Delete Review
     </button>
   </form>
@@ -485,12 +484,12 @@
         Join the community to share your experience
       </h3>
       <div class="d-flex flex-column flex-md-row gap-3 w-100">
-        <a href="/signup" class="btn btn-primary btn-lg flex-grow-1 py-3">
+        <a href="/signup" class="btn btn-primary btn-lg flex-grow-1 rounded-xl px-4 py-3 text-sm font-semibold sm:text-base">
           <i class="fas fa-user-plus me-2"></i>Create Account
         </a>
         <a
           href="/login"
-          class="btn btn-outline-dark btn-lg flex-grow-1 py-3"
+          class="btn btn-outline-dark btn-lg flex-grow-1 rounded-xl px-4 py-3 text-sm font-semibold sm:text-base"
         >
           <i class="fas fa-sign-in-alt me-2"></i>Sign In
         </a>
@@ -572,7 +571,7 @@
         ></textarea>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100">
+      <button type="submit" class="btn btn-primary w-100 rounded-xl px-4 py-3 text-sm font-semibold sm:text-base">
         Submit Review
       </button>
     </form>
@@ -899,188 +898,6 @@
     }
   }
 </style>
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Function to update all favorite counts on the page
-    const updateFavoriteCounts = (newCount) => {
-      // Ensure the count is never negative
-      const count = Math.max(0, parseInt(newCount, 10));
-      console.log('Updating favorite counts to:', count);
-      
-      // Update all elements with the favorite-count class
-      document.querySelectorAll('.favorite-count').forEach(el => {
-        el.textContent = count;
-      });
-    };
-    
-    // Initialize favorite count from data attribute
-    const favoriteCountElement = document.querySelector('.favorite-count');
-    let currentFavoriteCount = 0;
-    
-    if (favoriteCountElement) {
-      const initialCount = favoriteCountElement.getAttribute('data-initial-favorite-count');
-      currentFavoriteCount = Math.max(0, parseInt(initialCount, 10) || 0);
-      updateFavoriteCounts(currentFavoriteCount);
-    }
-    
-    console.log('Initial favorite count from server:', currentFavoriteCount);
-    
-    // Toast notification function - matches the one in script.js
-    function showToast(message, type = 'success') {
-      // Remove existing toast if any
-      const existingToast = document.querySelector('.toast-notification');
-      if (existingToast) {
-        existingToast.remove();
-      }
-
-      // Create new toast
-      const toast = document.createElement('div');
-      
-      // Set toast class based on type
-      let toastType = type;
-      if (type === 'added') {
-        toastType = 'error'; // Using error class for red color
-      } else if (type === 'removed') {
-        toastType = 'info';
-      }
-      
-      toast.className = `toast-notification ${toastType}`;
-      
-      // Select appropriate icon and message based on type
-      let icon, messageText;
-      switch (type) {
-        case 'success':
-          icon = 'fa-check-circle';
-          messageText = message;
-          break;
-        case 'error':
-          icon = 'fa-exclamation-circle';
-          messageText = message;
-          break;
-        case 'added':
-          icon = 'fa-heart';
-          messageText = 'Added to favorites';
-          break;
-        case 'removed':
-          icon = 'fa-heart-broken';
-          messageText = 'Removed from favorites';
-          break;
-        default:
-          icon = 'fa-info-circle';
-          messageText = message;
-      }
-
-      toast.innerHTML = `
-        <i class="fas ${icon}"></i>
-        <span>${messageText}</span>
-      `;
-
-      // Add to DOM
-      document.body.appendChild(toast);
-
-      // Trigger animation
-      requestAnimationFrame(() => {
-        toast.classList.add('show');
-      });
-
-      // Remove after 3 seconds
-      setTimeout(() => {
-        toast.classList.remove('show');
-        setTimeout(() => {
-          toast.remove();
-        }, 300);
-      }, 3000);
-    }
-
-    // Favorite button functionality
-    const favoriteBtns = document.querySelectorAll('.favorite-btn');
-    
-    favoriteBtns.forEach(btn => {
-      btn.addEventListener('click', async function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const listingId = this.dataset.listingId;
-        if (!listingId) {
-          console.error('No listing ID found on the button');
-          showToast('Could not process request', 'error');
-          return;
-        }
-        
-        // Check if user is logged in
-        if (!<%= currentUser ? 'true' : 'false' %>) {
-          window.location.href = '/login';
-          return;
-        }
-        const icon = this.querySelector('i');
-        const isActive = this.classList.contains('active');
-        
-        // Show loading state
-        this.classList.add('loading');
-        icon.className = 'fas fa-spinner fa-spin';
-        
-        try {
-          const response = await fetch(`/user/toggle-favorite/${listingId}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            credentials: 'same-origin'
-          });
-          
-          const data = await response.json();
-          
-          if (response.ok) {
-            // Update the favorite count from server response
-            if (data.favoriteCount !== undefined) {
-              currentFavoriteCount = Math.max(0, parseInt(data.favoriteCount, 10));
-              updateFavoriteCounts(currentFavoriteCount);
-              
-              // Update button state based on server response
-              if (data.status === 'added') {
-                icon.className = 'fas fa-heart';
-                this.classList.add('active');
-                showToast('Added to favorites!', 'added');
-              } else if (data.status === 'removed') {
-                icon.className = 'far fa-heart';
-                this.classList.remove('active');
-                showToast('Removed from favorites', 'removed');
-              }
-            } else {
-              // Fallback if no favoriteCount in response
-              if (data.status === 'added') {
-                currentFavoriteCount++;
-                icon.className = 'fas fa-heart';
-                this.classList.add('active');
-                showToast('Added to favorites!', 'added');
-              } else if (data.status === 'removed') {
-                currentFavoriteCount = Math.max(0, currentFavoriteCount - 1);
-                icon.className = 'far fa-heart';
-                this.classList.remove('active');
-                showToast('Removed from favorites', 'removed');
-              }
-              updateFavoriteCounts(currentFavoriteCount);
-            }
-            
-            // Add animation class
-            this.classList.add('animating');
-            setTimeout(() => this.classList.remove('animating'), 600);
-            
-            // Update favorite count in all .favorite-count elements
-            document.querySelectorAll('.favorite-count').forEach(el => {
-              el.textContent = currentFavoriteCount;
-            });
-        } catch (error) {
-          console.error('Error toggling favorite:', error);
-          showToast('Please login to add listings to favorites', 'error');
-          // Reset icon based on current state on error
-          icon.className = this.classList.contains('active') ? 'fas fa-heart' : 'far fa-heart';
-        }
-      });
-    });
-  });
-  </script>
-
 <style>
   /* Favorite Button */
   .favorite-btn {
