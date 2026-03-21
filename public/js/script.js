@@ -1,9 +1,9 @@
-// logic for bootstrap form validation:
+// Form validation with native browser checks.
 
 (() => {
   "use strict";
 
-  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  // Apply consistent validation styles on supported forms.
   const forms = document.querySelectorAll(".needs-validation");
 
   // Loop over them and prevent submission
@@ -11,12 +11,41 @@
     form.addEventListener(
       "submit",
       (event) => {
+        if (form.dataset.submitting === "true") {
+          event.preventDefault();
+          event.stopPropagation();
+          return;
+        }
+
         if (!form.checkValidity()) {
           event.preventDefault();
           event.stopPropagation();
+          form.reportValidity();
+          form.classList.add("was-validated");
+          return;
         }
 
         form.classList.add("was-validated");
+
+        form.dataset.submitting = "true";
+        const submitButtons = form.querySelectorAll(
+          'button[type="submit"], input[type="submit"]',
+        );
+        submitButtons.forEach((button) => {
+          button.disabled = true;
+          if (button.tagName === "BUTTON") {
+            const originalText = button.textContent.trim();
+            if (!button.dataset.originalText) {
+              button.dataset.originalText = originalText;
+            }
+            button.textContent = "Submitting...";
+          } else if (button.tagName === "INPUT") {
+            if (!button.dataset.originalValue) {
+              button.dataset.originalValue = button.value;
+            }
+            button.value = "Submitting...";
+          }
+        });
       },
       false,
     );
@@ -220,11 +249,11 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.querySelector(".listings-grid");
                       if (listingsGrid) {
                         listingsGrid.innerHTML = `
-                            <div class="col-12 text-center py-5">
-                              <i class="far fa-heart fa-3x mb-3" style="color: #ff6b6b;"></i>
-                              <h4>No favorite listings yet</h4>
-                              <p class="text-muted">Click the heart icon on a listing to add it to your favorites</p>
-                              <a href="/listings" class="btn btn-primary mt-3">Explore Listings</a>
+                            <div class="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-600">
+                              <i class="far fa-heart mb-3 text-3xl text-rose-400"></i>
+                              <h4 class="text-base font-semibold text-slate-900">No favorite listings yet</h4>
+                              <p class="mt-2 text-sm text-slate-500">Click the heart icon on a listing to add it to your favorites</p>
+                              <a href="/listings" class="mt-4 inline-flex rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Explore Listings</a>
                             </div>
                           `;
                       }
@@ -261,10 +290,10 @@ document.addEventListener("DOMContentLoaded", function () {
                       const emptyState = document.createElement("div");
                       emptyState.className = "user-empty-state";
                       emptyState.innerHTML = `
-                          <i class="fas fa-heart"></i>
-                          <h3>No Favorites Yet</h3>
-                          <p>Start saving your favorite listings!</p>
-                          <a href="/listings" class="btn btn-primary">Browse Listings</a>
+                          <i class="fas fa-heart text-2xl text-rose-500"></i>
+                          <h3 class="text-base font-semibold text-slate-900">No Favorites Yet</h3>
+                          <p class="text-sm text-slate-500">Start saving your favorite listings!</p>
+                          <a href="/listings" class="inline-flex rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Browse Listings</a>
                         `;
                       favoritesContainer.parentNode.insertBefore(
                         emptyState,
@@ -331,11 +360,11 @@ document.addEventListener("DOMContentLoaded", function () {
                       if (visibleFavorites.length === 0 && favoritesGrid) {
                         const emptyState = document.createElement("div");
                         emptyState.className =
-                          "col-12 text-center my-5 no-favorites-message";
+                          "no-favorites-message rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-600";
                         emptyState.innerHTML = `
-                            <i class="fas fa-heart-broken fa-3x mb-3" style="color: #ff6b6b;"></i>
-                            <h4>No favorite listings yet</h4>
-                            <p class="text-muted">Save your favorite rooms to see them here</p>
+                            <i class="fas fa-heart-broken mb-3 text-3xl text-rose-400"></i>
+                            <h4 class="text-base font-semibold text-slate-900">No favorite listings yet</h4>
+                            <p class="mt-2 text-sm text-slate-500">Save your favorite rooms to see them here</p>
                           `;
 
                         // Remove any existing no-results message

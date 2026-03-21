@@ -1,238 +1,41 @@
 <% layout("/layouts/boilerplateHome") %>
-<main>
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-lg-6 hero-content">
-          <h1 class="hero-title mb-4 animate-fade-in-up">
-            Welcome to SKN_Accomodation
-          </h1>
-          <p class="hero-subtitle lead mb-4 animate-fade-in-up delay-1">
-            Find unique places to stay and create unforgettable memories
-          </p>
-
-          <div class="animate-fade-in-up delay-1 hero-buttons">
-            <a href="/listings" class="btn-primary btn-lg me-2"
-              >See all listings</a
-            >
-            <a href="/login" class="btn-outline btn-lg me-2">Sign in</a>
-            <a href="/signup" class="btn-outline btn-lg">Register</a>
-          </div>
-        </div>
-        <div class="col-lg-6 d-none d-lg-block animate-fade-in-up delay-2">
-          <div
-            id="heroCarousel"
-            class="carousel slide rounded-4"
-            data-bs-ride="carousel"
-          >
-            <div class="carousel-indicators">
-              <button
-                type="button"
-                data-bs-target="#heroCarousel"
-                data-bs-slide-to="0"
-                class="active"
-              ></button>
-              <button
-                type="button"
-                data-bs-target="#heroCarousel"
-                data-bs-slide-to="1"
-              ></button>
-              <button
-                type="button"
-                data-bs-target="#heroCarousel"
-                data-bs-slide-to="2"
-              ></button>
-              <button
-                type="button"
-                data-bs-target="#heroCarousel"
-                data-bs-slide-to="3"
-              ></button>
-              <button
-                type="button"
-                data-bs-target="#heroCarousel"
-                data-bs-slide-to="4"
-              ></button>
-            </div>
-            <div class="carousel-inner">
-              <div class="carousel-item active" data-bs-interval="3000">
-                <img
-                  src="https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=2128&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  class="d-block w-100 img-fluid"
-                  alt="Mountain cabin"
-                />
-              </div>
-              <div class="carousel-item" data-bs-interval="3000">
-                <img
-                  src="https://a0.muscache.com/im/ml/photo_enhancement/pictures/9f50b008-d3cc-46ca-9ce9-22ace968b1f8.jpg?im_w=1440"
-                  class="d-block w-100 img-fluid"
-                  alt="Beach villa"
-                />
-              </div>
-              <div class="carousel-item" data-bs-interval="3000">
-                <img
-                  src="https://a0.muscache.com/im/pictures/81dca5d6-5a86-49bc-8eca-4a8610a07d27.jpg?im_w=1440"
-                  class="d-block w-100 img-fluid"
-                  alt="City apartment"
-                />
-              </div>
-              <div class="carousel-item" data-bs-interval="3000">
-                <img
-                  src="https://a0.muscache.com/im/ml/photo_enhancement/pictures/miso/Hosting-990107274204637127/original/67921aa9-44fe-4913-ab38-d486f3f30ae0.jpeg?im_w=1200"
-                  class="d-block w-100 img-fluid"
-                  alt="Desert oasis"
-                />
-              </div>
-              <div class="carousel-item" data-bs-interval="3000">
-                <img
-                  src="https://a0.muscache.com/im/ml/photo_enhancement/pictures/miso/Hosting-35746251/original/3953eeb5-0e49-426b-8967-f0236cc64cf3.jpeg?im_w=1200"
-                  class="d-block w-100 img-fluid"
-                  alt="Lakeside cottage"
-                />
-              </div>
-            </div>
-            <button
-              class="carousel-control-prev"
-              type="button"
-              data-bs-target="#heroCarousel"
-              data-bs-slide="prev"
-            >
-              <span
-                class="carousel-control-prev-icon"
-                aria-hidden="true"
-              ></span>
-              <span class="visually-hidden">Previous</span>
-            </button>
-            <button
-              class="carousel-control-next"
-              type="button"
-              data-bs-target="#heroCarousel"
-              data-bs-slide="next"
-            >
-              <span
-                class="carousel-control-next-icon"
-                aria-hidden="true"
-              ></span>
-              <span class="visually-hidden">Next</span>
-            </button>
-          </div>
-        </div>
+<section class="overflow-hidden rounded-3xl bg-gradient-to-br from-rose-50 via-white to-sky-50 p-8 shadow-soft sm:p-12">
+  <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
+    <div>
+      <p class="inline-flex rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-rose-700">Find Your Perfect Stay</p>
+      <h1 class="mt-4 text-4xl font-bold leading-tight text-slate-900 sm:text-5xl">Welcome to SKN_Accomodation</h1>
+      <p class="mt-4 text-lg text-slate-600">Discover rooms, shared spaces, and premium homes that fit your lifestyle and budget.</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/listings" class="rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white hover:bg-rose-700">Browse Listings</a>
+        <% if(!currentUser) { %>
+        <a href="/login" class="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-white">Log In</a>
+        <a href="/signup" class="rounded-xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-white">Sign Up</a>
+        <% } %>
       </div>
     </div>
-  </section>
-
-  <!-- About Section -->
-  <section class="about-section">
-    <div class="container">
-      <h2 class="about-title animate-fade-in-up">
-        Why Choose SKN_Accomodation?
-      </h2>
-      <div class="row">
-        <div class="col-md-4 mb-4 animate-fade-in-up delay-1">
-          <div class="about-card">
-            <div class="about-card-content">
-              <div class="about-card-icon">
-                <i class="fas fa-map-marker-alt"></i>
-              </div>
-              <h3 class="about-card-title">Unique Destinations</h3>
-              <p>
-                Discover one-of-a-kind places to stay, from cozy cabins to
-                luxury villas and everything in between.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-4 animate-fade-in-up delay-2">
-          <div class="about-card">
-            <div class="about-card-content">
-              <div class="about-card-icon">
-                <i class="fas fa-shield-alt"></i>
-              </div>
-              <h3 class="about-card-title">Trusted by Renters</h3>
-              <p>
-                Join thousands of satisfied guests who have found their perfect
-                accommodations through SKN_Accomodation.
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-4 animate-fade-in-up delay-3">
-          <div class="about-card">
-            <div class="about-card-content">
-              <div class="about-card-icon">
-                <i class="fas fa-heart"></i>
-              </div>
-              <h3 class="about-card-title">Memorable Experiences</h3>
-              <p>
-                Create lasting memories with authentic experiences and
-                personalized stays around the world.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="grid grid-cols-2 gap-4">
+      <img class="h-40 w-full rounded-2xl object-cover sm:h-48" src="https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=1200&auto=format&fit=crop" alt="Room" />
+      <img class="h-40 w-full rounded-2xl object-cover sm:h-48" src="https://a0.muscache.com/im/pictures/81dca5d6-5a86-49bc-8eca-4a8610a07d27.jpg?im_w=1200" alt="Listing" />
+      <img class="h-40 w-full rounded-2xl object-cover sm:h-48" src="https://a0.muscache.com/im/ml/photo_enhancement/pictures/miso/Hosting-990107274204637127/original/67921aa9-44fe-4913-ab38-d486f3f30ae0.jpeg?im_w=1200" alt="Hostel" />
+      <img class="h-40 w-full rounded-2xl object-cover sm:h-48" src="https://a0.muscache.com/im/ml/photo_enhancement/pictures/miso/Hosting-35746251/original/3953eeb5-0e49-426b-8967-f0236cc64cf3.jpeg?im_w=1200" alt="Apartment" />
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Testimonial Section -->
-  <section class="testimonial-section">
-    <div class="container">
-      <h2 class="testimonial-title animate-fade-in-up">What Our Renters Say</h2>
-      <div class="row">
-        <div class="col-md-6 mb-4 animate-fade-in-up delay-1">
-          <div class="testimonial-card">
-            <p class="testimonial-text">
-              "We found the perfect cabin for our anniversary through
-              SKN_Accomodation. The views were breathtaking and the experience
-              was unforgettable!"
-            </p>
-            <div class="testimonial-author">
-              <div class="testimonial-author-image">
-                <img src="/images/isha.jpg" alt="Isha" />
-              </div>
-              <div>
-                <div class="testimonial-author-name">Isha Dhall</div>
-                <div class="testimonial-author-location">New Town, Kolkata</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 mb-4 animate-fade-in-up delay-2">
-          <div class="testimonial-card">
-            <p class="testimonial-text">
-              "SKN_Accomodation made finding our family vacation home so easy.
-              The place was exactly as described and the host was amazing!"
-            </p>
-            <div class="testimonial-author">
-              <div class="testimonial-author-image">
-                <img src="/images/nakul.jpg" alt="Michael" />
-              </div>
-              <div>
-                <div class="testimonial-author-name">Nakul John</div>
-                <div class="testimonial-author-location">
-                  Salt Lake, Kolkata
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA Section -->
-  <section class="cta-section">
-    <div class="container">
-      <h2 class="cta-title animate-fade-in-up">
-        Ready to find your perfect stay?
-      </h2>
-      <p class="cta-subtitle animate-fade-in-up delay-1">
-        Browse our curated selection of unique accommodations and start your
-        journey today.
-      </p>
-      <div class="animate-fade-in-up delay-2">
-        <a href="/listings" class="btn-primary">Explore all listings</a>
-      </div>
-    </div>
-  </section>
-</main>
+<section class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+  <article class="rounded-2xl bg-white p-6 shadow-soft">
+    <i class="fas fa-map-marker-alt text-rose-600"></i>
+    <h3 class="mt-3 text-lg font-semibold">Great Locations</h3>
+    <p class="mt-2 text-sm text-slate-600">Prime student and professional areas across major cities.</p>
+  </article>
+  <article class="rounded-2xl bg-white p-6 shadow-soft">
+    <i class="fas fa-shield-alt text-rose-600"></i>
+    <h3 class="mt-3 text-lg font-semibold">Trusted Platform</h3>
+    <p class="mt-2 text-sm text-slate-600">Verified profiles, reviews, and safer booking communication.</p>
+  </article>
+  <article class="rounded-2xl bg-white p-6 shadow-soft">
+    <i class="fas fa-heart text-rose-600"></i>
+    <h3 class="mt-3 text-lg font-semibold">Better Experience</h3>
+    <p class="mt-2 text-sm text-slate-600">Shortlist favorites and manage your housing journey seamlessly.</p>
+  </article>
+</section>

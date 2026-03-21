@@ -1,177 +1,72 @@
-<%- include("../includes/flash") %> <% layout("/layouts/boilerplate") %>
+<%- include("../includes/flash") %>
+<% layout("/layouts/boilerplate") %>
 
-<div class="user-profile-container">
-  <div class="edit-profile-header">
-    <h1>Edit Profile</h1>
-    <p>Update your profile information and images</p>
-  </div>
+<section class="mx-auto max-w-3xl space-y-6 rounded-2xl bg-white p-6 shadow-soft sm:p-8">
+  <header>
+    <h1 class="text-2xl font-bold">Edit Profile</h1>
+    <p class="mt-1 text-sm text-slate-600">Update your basic details and profile images.</p>
+  </header>
 
-  <form
-    action="/profile?_method=PUT"
-    method="POST"
-    enctype="multipart/form-data"
-    class="edit-profile-form"
-  >
-    <div class="image-preview-section">
-      <div class="cover-image-preview">
-        <img
-          src="<%= user.coverImage.url %>"
-          alt="Cover Image Preview"
-          id="coverPreview"
-        />
-        <div class="image-upload-overlay">
-          <label for="coverImage" class="upload-label">
-            <i class="fas fa-camera"></i>
-            Change Cover Photo
-          </label>
-          <input
-            type="file"
-            id="coverImage"
-            name="coverImage"
-            accept="image/*"
-            class="image-upload"
-          />
-        </div>
+  <form action="/profile?_method=PUT" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div class="space-y-2">
+        <img src="<%= user.coverImage.url %>" alt="Cover Image Preview" id="coverPreview" class="h-40 w-full rounded-xl object-cover" />
+        <label for="coverImage" class="block text-sm font-semibold">Cover Image</label>
+        <input type="file" id="coverImage" name="coverImage" accept="image/*" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
       </div>
-
-      <div class="profile-image-preview">
-        <img
-          src="<%= user.image.url %>"
-          alt="Profile Image Preview"
-          id="profilePreview"
-        />
-        <div class="image-upload-overlay">
-          <label for="profileImage" class="upload-label">
-            <i class="fas fa-camera"></i>
-            Change Profile Photo
-          </label>
-          <input
-            type="file"
-            id="profileImage"
-            name="profileImage"
-            accept="image/*"
-            class="image-upload"
-          />
-        </div>
+      <div class="space-y-2">
+        <img src="<%= user.image.url %>" alt="Profile Image Preview" id="profilePreview" class="h-40 w-full rounded-xl object-cover" />
+        <label for="profileImage" class="block text-sm font-semibold">Profile Image</label>
+        <input type="file" id="profileImage" name="profileImage" accept="image/*" class="w-full rounded-xl border border-slate-300 px-3 py-2" />
       </div>
     </div>
 
-    <div class="form-section">
-      <div class="form-group-container">
-        <div class="form-group">
-          <label for="username">
-            <i class="fas fa-user"></i>
-            Username
-          </label>
-          <input
-            type="text"
-            id="username"
-            name="username"
-            value="<%= user.username %>"
-            required
-            class="form-control"
-            placeholder="Enter your username"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="email">
-            <i class="fas fa-envelope"></i>
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value="<%= user.email %>"
-            required
-            class="form-control"
-            placeholder="Enter your email"
-          />
-        </div>
-
-        <div class="form-group bio-group">
-          <label for="bio">
-            <i class="fas fa-pen"></i>
-            Bio
-          </label>
-          <textarea
-            id="bio"
-            name="bio"
-            class="form-control bio-input"
-            placeholder="Write something about yourself..."
-            maxlength="200"
-          >
-<%= user.bio %></textarea
-          >
-          <div class="bio-counter">
-            <span id="bioCharCount">0</span>/200 characters
-          </div>
-        </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label for="username" class="mb-1 block text-sm font-semibold">Username</label>
+        <input type="text" id="username" name="username" value="<%= user.username %>" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
       </div>
-
-      <div class="form-actions">
-        <a href="/profile" class="btn btn-outline">
-          <i class="fas fa-times"></i>
-          Cancel
-        </a>
-        <button type="submit" class="btn btn-primary">
-          <i class="fas fa-check"></i>
-          Save Changes
-        </button>
+      <div>
+        <label for="email" class="mb-1 block text-sm font-semibold">Email</label>
+        <input type="email" id="email" name="email" value="<%= user.email %>" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
       </div>
+    </div>
+
+    <div>
+      <label for="bio" class="mb-1 block text-sm font-semibold">Bio</label>
+      <textarea id="bio" name="bio" maxlength="200" class="w-full rounded-xl border border-slate-300 px-4 py-2.5" rows="4"><%= user.bio %></textarea>
+      <p class="mt-1 text-xs text-slate-500"><span id="bioCharCount">0</span>/200 characters</p>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <a href="/profile" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold">Cancel</a>
+      <button type="submit" class="rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700">Save Changes</button>
     </div>
   </form>
-</div>
+</section>
 
 <script>
-  // Preview uploaded images
   function previewImage(input, previewId) {
     if (input.files && input.files[0]) {
       const reader = new FileReader();
       reader.onload = function (e) {
         const previewImage = document.getElementById(previewId);
         previewImage.src = e.target.result;
-
-        // If this is the profile image, also update navbar
         if (previewId === "profilePreview") {
           const navbarImage = document.getElementById("navbar-profile-image");
-          if (navbarImage) {
-            navbarImage.src = e.target.result;
-          }
+          if (navbarImage) navbarImage.src = e.target.result;
         }
       };
       reader.readAsDataURL(input.files[0]);
     }
   }
 
-  document
-    .getElementById("profileImage")
-    .addEventListener("change", function () {
-      previewImage(this, "profilePreview");
-    });
+  document.getElementById("profileImage")?.addEventListener("change", function () { previewImage(this, "profilePreview"); });
+  document.getElementById("coverImage")?.addEventListener("change", function () { previewImage(this, "coverPreview"); });
 
-  document.getElementById("coverImage").addEventListener("change", function () {
-    previewImage(this, "coverPreview");
-  });
-
-  // Bio character counter
   const bioInput = document.getElementById("bio");
   const bioCharCount = document.getElementById("bioCharCount");
-
-  function updateCharCount() {
-    const count = bioInput.value.length;
-    bioCharCount.textContent = count;
-
-    // Optional: Add visual feedback when approaching limit
-    if (count >= 180) {
-      bioCharCount.style.color = "#e11d48";
-    } else {
-      bioCharCount.style.color = "#6b7280";
-    }
-  }
-
-  bioInput.addEventListener("input", updateCharCount);
-  // Initialize counter
+  function updateCharCount() { if (!bioInput || !bioCharCount) return; bioCharCount.textContent = bioInput.value.length; }
+  bioInput?.addEventListener("input", updateCharCount);
   updateCharCount();
 </script>

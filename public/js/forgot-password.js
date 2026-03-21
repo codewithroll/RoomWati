@@ -49,17 +49,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Show OTP input section and hide email form
       if (forgotPasswordForm && verifyOtpForm) {
-        forgotPasswordForm.classList.add("d-none");
-        verifyOtpForm.classList.remove("d-none");
+        forgotPasswordForm.classList.add("hidden");
+        verifyOtpForm.classList.remove("hidden");
       } else {
         // Fallback to old behavior if new elements not found
-        otpSection?.classList.remove("d-none");
+        otpSection?.classList.remove("hidden");
       }
 
       successMessage.textContent =
         "We've sent a verification code to your email. Please check your inbox.";
-      successMessage.classList.remove("d-none");
-      errorMessage.classList.add("d-none");
+      successMessage.classList.remove("hidden");
+      errorMessage.classList.add("hidden");
 
       // Set flag to indicate we're in verification step
       isVerificationStep = true;
@@ -124,8 +124,8 @@ document.addEventListener("DOMContentLoaded", function () {
           ".reset-password-form",
         );
         if (verifyOtpForm && resetPasswordForm) {
-          verifyOtpForm.classList.add("d-none");
-          resetPasswordForm.classList.remove("d-none");
+          verifyOtpForm.classList.add("hidden");
+          resetPasswordForm.classList.remove("hidden");
 
           // Set the token in the hidden input
           const tokenInput = document.getElementById("resetToken");
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
           // Update success message
           successMessage.textContent =
             "OTP verified! Please set your new password.";
-          successMessage.classList.remove("d-none");
+          successMessage.classList.remove("hidden");
 
           // Log the token for debugging
           console.log("Reset token set:", resetTokenValue);
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
           );
           // Fallback to old behavior if new elements not found
           form.style.display = "none";
-          resetForm?.classList.remove("d-none");
+          resetForm?.classList.remove("hidden");
         }
 
         // Reset verification step flag
@@ -171,8 +171,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const successMessage = document.getElementById("successMessage");
 
     // Reset messages
-    if (errorMessage) errorMessage.classList.add("d-none");
-    if (successMessage) successMessage.classList.add("d-none");
+    if (errorMessage) errorMessage.classList.add("hidden");
+    if (successMessage) successMessage.classList.add("hidden");
 
     // Validate inputs
     if (!password || !confirmPassword) {
@@ -240,8 +240,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (successMessage) {
         successMessage.textContent =
           "Password reset successfully! Redirecting to login...";
-        successMessage.classList.remove("d-none");
-        if (errorMessage) errorMessage.classList.add("d-none");
+        successMessage.classList.remove("hidden");
+        if (errorMessage) errorMessage.classList.add("hidden");
       }
 
       // Hide reset form
@@ -303,8 +303,8 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       successMessage.textContent = "New OTP has been sent to your email.";
-      successMessage.classList.remove("d-none");
-      errorMessage.classList.add("d-none");
+      successMessage.classList.remove("hidden");
+      errorMessage.classList.add("hidden");
     } catch (error) {
       showError(error.message || "Failed to resend OTP. Please try again.");
     } finally {
@@ -315,12 +315,12 @@ document.addEventListener("DOMContentLoaded", function () {
   // Helper functions
   function showError(message) {
     errorMessage.textContent = message;
-    errorMessage.classList.remove("d-none");
-    successMessage.classList.add("d-none");
+    errorMessage.classList.remove("hidden");
+    successMessage.classList.add("hidden");
 
     // Auto-hide error after 5 seconds
     setTimeout(() => {
-      errorMessage.classList.add("d-none");
+      errorMessage.classList.add("hidden");
     }, 5000);
   }
 
@@ -335,7 +335,7 @@ document.addEventListener("DOMContentLoaded", function () {
       : null;
 
     if (isLoading) {
-      spinner?.classList.remove("d-none");
+      spinner?.classList.remove("hidden");
       if (button) {
         button.querySelector("span:not(.spinner-border)").textContent =
           "Processing...";
@@ -343,7 +343,7 @@ document.addEventListener("DOMContentLoaded", function () {
         submitButtonText.textContent = "Processing...";
       }
     } else {
-      spinner?.classList.add("d-none");
+      spinner?.classList.add("hidden");
       if (button) {
         button.querySelector("span:not(.spinner-border)").textContent =
           buttonText;
@@ -355,3 +355,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 });
+

@@ -1,402 +1,76 @@
 <% layout("/layouts/boilerplate") %>
-<div class="container py-4">
-  <div class="row">
-    <div class="col-lg-8 offset-lg-2">
-      <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-header bg-white py-3">
-          <h2 class="card-title mb-0 fw-bold">Edit Your Listing</h2>
-        </div>
-        <div class="card-body p-4">
-          <form
-            method="post"
-            action="/listings/<%= listing._id %>?_method=PUT"
-            class="needs-validation"
-            novalidate
-            enctype="multipart/form-data"
-          >
-            <!-- Title -->
-            <div class="mb-4">
-              <label for="title" class="form-label fw-semibold">What's the name of your place?</label>
-              <input
-                type="text"
-                value="<%=listing.title%>"
-                name="listing[title]"
-                placeholder="E.g., Cozy mountain retreat with stunning views"
-                class="form-control form-control-lg"
-                required
-              />
-              <div class="valid-feedback">Title looks good!</div>
-              <div class="invalid-feedback">Title field can't be empty</div>
-              <div class="form-text text-muted">Keep it short and catchy</div>
-            </div>
-
-            <!-- Description -->
-            <div class="mb-4">
-              <label for="description" class="form-label fw-semibold">Describe your place to guests</label>
-              <textarea
-                name="listing[description]"
-                class="form-control"
-                placeholder="Mention the best features, unique amenities, and nearby attractions"
-                rows="4"
-                required
-              ><%=listing.description%></textarea>
-              <div class="invalid-feedback">Description field can't be empty</div>
-            </div>
-
-            <!-- Image -->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">Listing Image</label>
-              <div class="card bg-light border">
-                <div class="row align-items-center g-0">
-                  <div class="col-md-6">
-                    <div class="p-3">
-                      <div class="image-container rounded overflow-hidden" style="max-height: 240px;">
-                        <img src="<%= originalImageUrl %>" alt="Current Image" class="img-fluid w-100 object-fit-cover">
-                      </div>
-                      <p class="text-muted mt-2 mb-0 small">Current image</p>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="p-3">
-                      <label for="image" class="form-label">Upload New Image</label>
-                      <input
-                        name="listing[image]"
-                        id="image"
-                        type="file"
-                        class="form-control"
-                        accept="image/*"
-                      />
-                      <p class="form-text text-muted small mt-2">
-                        Great photos increase your chances of getting bookings
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Price and Country -->
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <label for="price" class="form-label fw-semibold">Price per night (₹)</label>
-                <div class="input-group">
-                  <span class="input-group-text">₹</span>
-                  <input
-                    type="number"
-                    name="listing[price]"
-                    value="<%=listing.price%>"
-                    placeholder="1200"
-                    class="form-control"
-                    required
-                  />
-                </div>
-                <div class="invalid-feedback">Please enter a valid price</div>
-              </div>
-
-              <div class="col-md-6">
-                <label for="country" class="form-label fw-semibold">Country</label>
-                <input
-                  type="text"
-                  name="listing[country]"
-                  value="<%=listing.country%>"
-                  placeholder="India"
-                  class="form-control"
-                  required
-                />
-                <div class="invalid-feedback">Please enter a valid country name</div>
-              </div>
-            </div>
-
-            <!-- Location -->
-            <div class="mb-4">
-              <label for="location" class="form-label fw-semibold">Location</label>
-              <input
-                type="text"
-                name="listing[location]"
-                value="<%=listing.location%>"
-                placeholder="City, State"
-                class="form-control"
-                required
-              />
-              <div class="invalid-feedback">Please enter a valid location name</div>
-              <div class="form-text text-muted">Provide specific location to help guests find your place</div>
-            </div>
-
-            <!-- Room Details -->
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <label for="roomType" class="form-label fw-semibold">Room Type</label>
-                <select name="listing[roomType]" class="form-select">
-                  <option value="single" <%= listing.roomType === 'single' ? 'selected' : '' %>>Single</option>
-                  <option value="shared" <%= listing.roomType === 'shared' ? 'selected' : '' %>>Shared</option>
-                  <option value="studio" <%= listing.roomType === 'studio' ? 'selected' : '' %>>Studio</option>
-                  <option value="ensuite" <%= listing.roomType === 'ensuite' ? 'selected' : '' %>>Ensuite</option>
-                </select>
-              </div>
-
-              <div class="col-md-6">
-                <label for="furnished" class="form-label fw-semibold">Furnishing</label>
-                <select name="listing[furnished]" class="form-select">
-                  <option value="furnished" <%= listing.furnished === 'furnished' ? 'selected' : '' %>>Furnished</option>
-                  <option value="unfurnished" <%= listing.furnished === 'unfurnished' ? 'selected' : '' %>>Unfurnished</option>
-                  <option value="semifurnished" <%= listing.furnished === 'semifurnished' ? 'selected' : '' %>>Semi-Furnished</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Preferences -->
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <label for="genderPreference" class="form-label fw-semibold">Gender Preference</label>
-                <select name="listing[genderPreference]" class="form-select">
-                  <option value="any" <%= listing.genderPreference === 'any' ? 'selected' : '' %>>Any</option>
-                  <option value="male" <%= listing.genderPreference === 'male' ? 'selected' : '' %>>Male</option>
-                  <option value="female" <%= listing.genderPreference === 'female' ? 'selected' : '' %>>Female</option>
-                </select>
-              </div>
-
-              <div class="col-md-6">
-                <label for="preferredTenants" class="form-label fw-semibold">Preferred Tenants</label>
-                <select name="listing[preferredTenants]" class="form-select">
-                  <option value="any" <%= listing.preferredTenants === 'any' ? 'selected' : '' %>>Any</option>
-                  <option value="students" <%= listing.preferredTenants === 'students' ? 'selected' : '' %>>Students</option>
-                  <option value="professionals" <%= listing.preferredTenants === 'professionals' ? 'selected' : '' %>>Professionals</option>
-                  <option value="family" <%= listing.preferredTenants === 'family' ? 'selected' : '' %>>Family</option>
-                  <option value="couples" <%= listing.preferredTenants === 'couples' ? 'selected' : '' %>>Couples</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Availability -->
-            <div class="mb-3">
-              <div class="form-check">
-                <input
-                  type="checkbox"
-                  class="form-check-input"
-                  id="immediateAvailability"
-                  name="listing[immediateAvailability]"
-                  <%= listing.immediateAvailability ? 'checked' : '' %>
-                />
-                <label class="form-check-label fw-semibold" for="immediateAvailability">
-                  Immediate Availability
-                </label>
-              </div>
-            </div>
-
-            <div class="mb-4">
-              <label for="availableFrom" class="form-label fw-semibold">Available From</label>
-              <input 
-                type="date" 
-                name="listing[availableFrom]" 
-                class="form-control" 
-                value="<%= listing.availableFrom ? listing.availableFrom.toISOString().split('T')[0] : '' %>"
-              />
-            </div>
-
-            <!-- Amenities -->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">Amenities</label>
-              <div class="row row-cols-1 row-cols-md-2 g-2">
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="attachedBathroom" 
-                      name="listing[amenities][attachedBathroom]"
-                      <%= listing.amenities && listing.amenities.attachedBathroom ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="attachedBathroom">Attached Bathroom</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="kitchenAccess" 
-                      name="listing[amenities][kitchenAccess]"
-                      <%= listing.amenities && listing.amenities.kitchenAccess ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="kitchenAccess">Kitchen Access</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="wifi" 
-                      name="listing[amenities][wifi]"
-                      <%= listing.amenities && listing.amenities.wifi ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="wifi">WiFi</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="ac" 
-                      name="listing[amenities][ac]"
-                      <%= listing.amenities && listing.amenities.ac ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="ac">AC</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="laundry" 
-                      name="listing[amenities][laundry]"
-                      <%= listing.amenities && listing.amenities.laundry ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="laundry">Laundry</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="parking" 
-                      name="listing[amenities][parking]"
-                      <%= listing.amenities && listing.amenities.parking ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="parking">Parking</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Rules -->
-            <div class="mb-4">
-              <label class="form-label fw-semibold">Rules</label>
-              <div class="row row-cols-1 row-cols-md-2 g-2">
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="smoking" 
-                      name="listing[rules][smoking]"
-                      <%= listing.rules && listing.rules.smoking ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="smoking">Smoking Allowed</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="pets" 
-                      name="listing[rules][pets]"
-                      <%= listing.rules && listing.rules.pets ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="pets">Pets Allowed</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="guests" 
-                      name="listing[rules][guests]"
-                      <%= listing.rules && listing.rules.guests ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="guests">Guests Allowed</label>
-                  </div>
-                </div>
-                <div class="col">
-                  <div class="form-check">
-                    <input 
-                      type="checkbox" 
-                      class="form-check-input" 
-                      id="curfew" 
-                      name="listing[rules][curfew]"
-                      <%= listing.rules && listing.rules.curfew ? 'checked' : '' %>
-                    />
-                    <label class="form-check-label" for="curfew">Curfew</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="mb-4">
-              <label for="curfewDetails" class="form-label fw-semibold">Curfew Details</label>
-              <input
-                type="text"
-                name="listing[rules][curfewDetails]"
-                class="form-control"
-                placeholder="E.g., No entry after 11 PM"
-                value="<%= listing.rules && listing.rules.curfewDetails ? listing.rules.curfewDetails : '' %>"
-              />
-            </div>
-
-            <!-- Security Deposit and Min Stay -->
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <label for="securityDeposit" class="form-label fw-semibold">Security Deposit (₹)</label>
-                <input
-                  type="number"
-                  name="listing[securityDeposit]"
-                  class="form-control"
-                  placeholder="E.g., 3000"
-                  value="<%= listing.securityDeposit || '' %>"
-                />
-              </div>
-
-              <div class="col-md-6">
-                <label for="minStayMonths" class="form-label fw-semibold">Minimum Stay (in months)</label>
-                <input
-                  type="number"
-                  name="listing[minStayMonths]"
-                  class="form-control"
-                  placeholder="E.g., 3"
-                  value="<%= listing.minStayMonths || '' %>"
-                />
-              </div>
-            </div>
-
-            <!-- Bills -->
-            <div class="mb-3">
-              <div class="form-check">
-                <input
-                  type="checkbox"
-                  class="form-check-input"
-                  id="billsIncluded"
-                  name="listing[bills][included]"
-                  <%= listing.bills && listing.bills.included ? 'checked' : '' %>
-                />
-                <label class="form-check-label fw-semibold" for="billsIncluded">
-                  Bills Included
-                </label>
-              </div>
-            </div>
-
-            <div class="mb-4">
-              <label for="billsDetails" class="form-label fw-semibold">Bill Details</label>
-              <input
-                type="text"
-                name="listing[bills][details]"
-                class="form-control"
-                placeholder="E.g., Water & Electricity included"
-                value="<%= listing.bills && listing.bills.details ? listing.bills.details : '' %>"
-              />
-            </div>
-            
-            <div class="d-flex justify-content-between align-items-center mt-4">
-              <a href="/listings/<%= listing._id %>" class="btn btn-outline-secondary">Cancel</a>
-              <button type="submit" class="btn btn-primary px-4 py-2">Save Changes</button>
-            </div>
-          </form>
-        </div>
-      </div>
+<section class="mx-auto max-w-4xl rounded-2xl bg-white p-6 shadow-soft sm:p-8">
+  <h1 class="text-2xl font-bold text-slate-900">Edit Listing</h1>
+  <form method="post" action="/listings/<%= listing._id %>?_method=PUT" enctype="multipart/form-data" class="needs-validation mt-6 space-y-5" novalidate>
+    <div>
+      <label class="mb-1 block text-sm font-semibold">Title</label>
+      <input type="text" name="listing[title]" value="<%= listing.title %>" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
     </div>
-  </div>
-</div>
+    <div>
+      <label class="mb-1 block text-sm font-semibold">Description</label>
+      <textarea name="listing[description]" rows="4" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5"><%= listing.description %></textarea>
+    </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div><label class="mb-1 block text-sm font-semibold">Price</label><input type="number" name="listing[price]" value="<%= listing.price %>" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5" /></div>
+      <div><label class="mb-1 block text-sm font-semibold">Country</label><input type="text" name="listing[country]" value="<%= listing.country %>" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5" /></div>
+    </div>
+    <div>
+      <label class="mb-1 block text-sm font-semibold">Location</label>
+      <input type="text" name="listing[location]" value="<%= listing.location %>" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+    </div>
+    <div class="rounded-xl border border-slate-200 p-4">
+      <p class="mb-2 text-sm font-semibold">Current Image</p>
+      <img src="<%= originalImageUrl %>" alt="Current Image" class="h-40 w-full rounded-lg object-cover" />
+      <input type="file" id="image" name="listing[image]" accept="image/*" class="mt-3 w-full rounded-xl border border-slate-300 px-4 py-2" />
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <select name="listing[roomType]" class="w-full rounded-xl border border-slate-300 px-4 py-2.5">
+        <option value="single" <%= listing.roomType === 'single' ? 'selected' : '' %>>Single</option>
+        <option value="shared" <%= listing.roomType === 'shared' ? 'selected' : '' %>>Shared</option>
+        <option value="studio" <%= listing.roomType === 'studio' ? 'selected' : '' %>>Studio</option>
+        <option value="ensuite" <%= listing.roomType === 'ensuite' ? 'selected' : '' %>>Ensuite</option>
+      </select>
+      <select name="listing[furnished]" class="w-full rounded-xl border border-slate-300 px-4 py-2.5">
+        <option value="furnished" <%= listing.furnished === 'furnished' ? 'selected' : '' %>>Furnished</option>
+        <option value="unfurnished" <%= listing.furnished === 'unfurnished' ? 'selected' : '' %>>Unfurnished</option>
+        <option value="semifurnished" <%= listing.furnished === 'semifurnished' ? 'selected' : '' %>>Semi-Furnished</option>
+      </select>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <select name="listing[genderPreference]" class="w-full rounded-xl border border-slate-300 px-4 py-2.5">
+        <option value="any" <%= listing.genderPreference === 'any' ? 'selected' : '' %>>Any</option>
+        <option value="male" <%= listing.genderPreference === 'male' ? 'selected' : '' %>>Male</option>
+        <option value="female" <%= listing.genderPreference === 'female' ? 'selected' : '' %>>Female</option>
+      </select>
+      <select name="listing[preferredTenants]" class="w-full rounded-xl border border-slate-300 px-4 py-2.5">
+        <option value="any" <%= listing.preferredTenants === 'any' ? 'selected' : '' %>>Any</option>
+        <option value="students" <%= listing.preferredTenants === 'students' ? 'selected' : '' %>>Students</option>
+        <option value="professionals" <%= listing.preferredTenants === 'professionals' ? 'selected' : '' %>>Professionals</option>
+        <option value="family" <%= listing.preferredTenants === 'family' ? 'selected' : '' %>>Family</option>
+        <option value="couples" <%= listing.preferredTenants === 'couples' ? 'selected' : '' %>>Couples</option>
+      </select>
+    </div>
+
+    <div class="grid gap-3 text-sm sm:grid-cols-2">
+      <label><input type="checkbox" name="listing[immediateAvailability]" <%= listing.immediateAvailability ? 'checked' : '' %> class="mr-2" />Immediate Availability</label>
+      <input type="date" name="listing[availableFrom]" value="<%= listing.availableFrom ? listing.availableFrom.toISOString().split('T')[0] : '' %>" class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <input type="number" name="listing[securityDeposit]" value="<%= listing.securityDeposit || '' %>" placeholder="Security Deposit" class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+      <input type="number" name="listing[minStayMonths]" value="<%= listing.minStayMonths || '' %>" placeholder="Minimum Stay" class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <input type="text" name="listing[rules][curfewDetails]" value="<%= listing.rules && listing.rules.curfewDetails ? listing.rules.curfewDetails : '' %>" placeholder="Curfew details" class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+      <input type="text" name="listing[bills][details]" value="<%= listing.bills && listing.bills.details ? listing.bills.details : '' %>" placeholder="Bill details" class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+    </div>
+
+    <div class="flex items-center justify-between">
+      <a href="/listings/<%= listing._id %>" class="rounded-xl border border-slate-300 px-4 py-2 text-sm font-medium">Cancel</a>
+      <button type="submit" class="rounded-xl bg-rose-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-rose-700">Save Changes</button>
+    </div>
+  </form>
+</section>

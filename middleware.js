@@ -98,7 +98,18 @@ module.exports.validateListing = (req, res, next) => {
 
   if (error) {
     const errMsg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
+    const wantsJson =
+      req.is("application/json") ||
+      req.get("x-requested-with") === "XMLHttpRequest";
+
+    if (wantsJson) {
+      return next(new ExpressError(400, errMsg));
+    }
+
+    req.flash("error", `Listing validation failed: ${errMsg}`);
+    const fallback =
+      req.method === "PUT" ? req.originalUrl.replace(/\?_method=PUT$/, "") : "/listings/new";
+    return res.redirect(req.get("referer") || fallback);
   }
 
   req.body = value;

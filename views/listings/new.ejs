@@ -1,292 +1,110 @@
 <% layout("/layouts/boilerplate") %>
-<div class="airbnb-container">
-  <div class="listing-form-container">
-    <h2 class="form-heading">List your space</h2>
-    <p class="form-subheading">
-      Share your place with renters around the world
-    </p>
+<section class="mx-auto max-w-4xl rounded-2xl bg-white p-6 shadow-soft sm:p-8">
+  <h1 class="text-2xl font-bold text-slate-900">Create Listing</h1>
+  <p class="mt-2 text-sm text-slate-600">Share your space with accurate details.</p>
 
-    <form
-      method="post"
-      action="/listings"
-      class="airbnb-form needs-validation"
-      novalidate
-      enctype="multipart/form-data"
-    >
-      <!-- Title -->
-      <div class="form-group">
-        <label for="title">What's the name of your place?</label>
-        <input
-          type="text"
-          name="listing[title]"
-          placeholder="E.g., Cozy mountain retreat with stunning views"
-          class="form-control"
-          required
-        />
-        <div class="feedback-text">Keep it short and catchy</div>
+  <form method="post" action="/listings" enctype="multipart/form-data" class="needs-validation mt-6 space-y-5" novalidate>
+    <div>
+      <label class="mb-1 block text-sm font-semibold">Title</label>
+      <input type="text" name="listing[title]" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none" />
+    </div>
+
+    <div>
+      <label class="mb-1 block text-sm font-semibold">Description</label>
+      <textarea name="listing[description]" rows="4" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none"></textarea>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class="mb-1 block text-sm font-semibold">Price (INR/month)</label>
+        <input type="number" name="listing[price]" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none" />
       </div>
-
-      <!-- Description -->
-      <div class="form-group">
-        <label for="description">Describe your place to renters</label>
-        <textarea
-          name="listing[description]"
-          class="form-control"
-          placeholder="Mention the best features, unique amenities, and nearby attractions"
-          rows="4"
-          required
-        ></textarea>
+      <div>
+        <label class="mb-1 block text-sm font-semibold">Country</label>
+        <input type="text" name="listing[country]" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none" />
       </div>
+    </div>
 
-      <!-- Image -->
-      <div class="form-group">
-        <label for="image">Add photos of your place</label>
-        <div class="image-upload-container">
-          <input
-            type="file"
-            name="listing[image]"
-            class="form-control"
-            accept="image/*"
-          />
+    <div>
+      <label class="mb-1 block text-sm font-semibold">Location</label>
+      <input type="text" name="listing[location]" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none" />
+    </div>
 
-          <div class="image-tips">
-            Great photos increase your chances of getting bookings
-          </div>
-        </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class="mb-1 block text-sm font-semibold">Room Type</label>
+        <select name="listing[roomType]" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none">
+          <option value="single">Single</option><option value="shared">Shared</option><option value="studio">Studio</option><option value="ensuite">Ensuite</option>
+        </select>
       </div>
-
-      <!-- Price and Country -->
-      <div class="form-row">
-        <div class="form-group price-group">
-          <label for="price">Price per month (₹)</label>
-          <div class="price-input-container">
-            <span class="currency-symbol">₹</span>
-            <input
-              name="listing[price]"
-              placeholder="1200"
-              class="form-control"
-              required
-            />
-          </div>
-        </div>
-
-        <div class="form-group country-group">
-          <label for="country">Country</label>
-          <input
-            type="text"
-            name="listing[country]"
-            placeholder="India"
-            class="form-control"
-            required
-          />
-        </div>
+      <div>
+        <label class="mb-1 block text-sm font-semibold">Furnishing</label>
+        <select name="listing[furnished]" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none">
+          <option value="furnished">Furnished</option><option value="unfurnished">Unfurnished</option><option value="semifurnished">Semi-Furnished</option>
+        </select>
       </div>
+    </div>
 
-      <!-- Location -->
-      <div class="form-group">
-        <label for="location">Location</label>
-        <input
-          type="text"
-          name="listing[location]"
-          placeholder="City, State"
-          class="form-control"
-          required
-        />
-        <div class="location-tip">
-          Provide specific location to help renters find your place
-        </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <div>
+        <label class="mb-1 block text-sm font-semibold">Gender Preference</label>
+        <select name="listing[genderPreference]" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none">
+          <option value="any">Any</option><option value="male">Male</option><option value="female">Female</option>
+        </select>
       </div>
-
-      <!-- Room Details -->
-      <div class="form-row">
-        <div class="form-group">
-          <label for="roomType">Room Type</label>
-          <select name="listing[roomType]" class="form-control">
-            <option value="single">Single</option>
-            <option value="shared">Shared</option>
-            <option value="studio">Studio</option>
-            <option value="ensuite">Ensuite</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="furnished">Furnishing</label>
-          <select name="listing[furnished]" class="form-control">
-            <option value="furnished">Furnished</option>
-            <option value="unfurnished">Unfurnished</option>
-            <option value="semifurnished">Semi-Furnished</option>
-          </select>
-        </div>
+      <div>
+        <label class="mb-1 block text-sm font-semibold">Preferred Tenants</label>
+        <select name="listing[preferredTenants]" class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none">
+          <option value="any">Any</option><option value="students">Students</option><option value="professionals">Professionals</option><option value="family">Family</option><option value="couples">Couples</option>
+        </select>
       </div>
+    </div>
 
-      <!-- Preferences -->
-      <div class="form-row">
-        <div class="form-group">
-          <label for="genderPreference">Gender Preference</label>
-          <select name="listing[genderPreference]" class="form-control">
-            <option value="any">Any</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="preferredTenants">Preferred Tenants</label>
-          <select name="listing[preferredTenants]" class="form-control">
-            <option value="any">Any</option>
-            <option value="students">Students</option>
-            <option value="professionals">Professionals</option>
-            <option value="family">Family</option>
-            <option value="couples">Couples</option>
-          </select>
-        </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" name="listing[immediateAvailability]" checked class="h-4 w-4 rounded border-slate-300 text-rose-600" />Immediate Availability</label>
+      <div>
+        <label class="mb-1 block text-sm font-semibold">Available From</label>
+        <input type="date" name="listing[availableFrom]" value="<%= new Date().toISOString().split('T')[0] %>" min="<%= new Date().toISOString().split('T')[0] %>" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5 focus:border-rose-500 focus:outline-none" />
       </div>
+    </div>
 
-      <!-- Availability -->
-      <div class="form-group">
-        <label>
-          <input
-            type="checkbox"
-            name="listing[immediateAvailability]"
-            checked
-          />
-          Immediate Availability
-        </label>
+    <div>
+      <label class="mb-2 block text-sm font-semibold">Amenities</label>
+      <div class="grid grid-cols-2 gap-2 text-sm sm:grid-cols-3">
+        <label><input type="checkbox" name="listing[amenities][attachedBathroom]" class="mr-2" />Attached Bathroom</label>
+        <label><input type="checkbox" name="listing[amenities][kitchenAccess]" checked class="mr-2" />Kitchen Access</label>
+        <label><input type="checkbox" name="listing[amenities][wifi]" class="mr-2" />WiFi</label>
+        <label><input type="checkbox" name="listing[amenities][ac]" class="mr-2" />AC</label>
+        <label><input type="checkbox" name="listing[amenities][laundry]" class="mr-2" />Laundry</label>
+        <label><input type="checkbox" name="listing[amenities][parking]" class="mr-2" />Parking</label>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="availableFrom">Available From</label>
-        <input
-          type="date"
-          name="listing[availableFrom]"
-          class="form-control"
-          value="<%= new Date().toISOString().split('T')[0] %>"
-          min="<%= new Date().toISOString().split('T')[0] %>"
-          required
-        />
-        <small class="form-text text-muted"
-          >Select the date when the listing becomes available</small
-        >
+    <div>
+      <label class="mb-2 block text-sm font-semibold">Rules</label>
+      <div class="grid grid-cols-2 gap-2 text-sm">
+        <label><input type="checkbox" name="listing[rules][smoking]" class="mr-2" />Smoking Allowed</label>
+        <label><input type="checkbox" name="listing[rules][pets]" class="mr-2" />Pets Allowed</label>
+        <label><input type="checkbox" name="listing[rules][guests]" checked class="mr-2" />Guests Allowed</label>
+        <label><input type="checkbox" name="listing[rules][curfew]" class="mr-2" />Curfew</label>
       </div>
+    </div>
 
-      <!-- Amenities -->
-      <div class="form-group">
-        <label>Amenities</label><br />
-        <label
-          ><input type="checkbox" name="listing[amenities][attachedBathroom]" />
-          Attached Bathroom</label
-        ><br />
-        <label
-          ><input
-            type="checkbox"
-            name="listing[amenities][kitchenAccess]"
-            checked
-          />
-          Kitchen Access</label
-        ><br />
-        <label
-          ><input type="checkbox" name="listing[amenities][wifi]" /> WiFi</label
-        ><br />
-        <label><input type="checkbox" name="listing[amenities][ac]" /> AC</label
-        ><br />
-        <label
-          ><input type="checkbox" name="listing[amenities][laundry]" />
-          Laundry</label
-        ><br />
-        <label
-          ><input type="checkbox" name="listing[amenities][parking]" />
-          Parking</label
-        >
-      </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <input type="text" name="listing[rules][curfewDetails]" placeholder="Curfew details" class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+      <input type="file" name="listing[image]" accept="image/*" class="w-full rounded-xl border border-slate-300 px-4 py-2" />
+    </div>
 
-      <!-- Rules -->
-      <div class="form-group">
-        <label>Rules</label><br />
-        <label
-          ><input type="checkbox" name="listing[rules][smoking]" /> Smoking
-          Allowed</label
-        ><br />
-        <label
-          ><input type="checkbox" name="listing[rules][pets]" /> Pets
-          Allowed</label
-        ><br />
-        <label
-          ><input type="checkbox" name="listing[rules][guests]" checked />
-          Guests Allowed</label
-        ><br />
-        <label
-          ><input type="checkbox" name="listing[rules][curfew]" /> Curfew</label
-        >
-      </div>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <input type="number" name="listing[securityDeposit]" placeholder="Security Deposit" class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+      <input type="number" name="listing[minStayMonths]" placeholder="Minimum Stay (months)" class="w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+    </div>
 
-      <div class="form-group">
-        <label for="rules[curfewDetails]">Curfew Details</label>
-        <input
-          type="text"
-          name="listing[rules][curfewDetails]"
-          class="form-control"
-          placeholder="E.g., No entry after 11 PM"
-        />
-      </div>
+    <div>
+      <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" name="listing[bills][included]" class="h-4 w-4 rounded border-slate-300 text-rose-600" />Bills Included</label>
+      <input type="text" name="listing[bills][details]" placeholder="Bill details" class="mt-2 w-full rounded-xl border border-slate-300 px-4 py-2.5" />
+    </div>
 
-      <!-- Security Deposit and Min Stay -->
-      <div class="form-row">
-        <div class="form-group">
-          <label for="securityDeposit">Security Deposit (₹)</label>
-          <input
-            type="number"
-            name="listing[securityDeposit]"
-            class="form-control"
-            placeholder="E.g., 3000"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="minStayMonths">Minimum Stay (in months)</label>
-          <input
-            type="number"
-            name="listing[minStayMonths]"
-            class="form-control"
-            placeholder="E.g., 3"
-          />
-        </div>
-      </div>
-
-      <!-- Bills -->
-      <div class="form-group">
-        <label
-          ><input type="checkbox" name="listing[bills][included]" /> Bills
-          Included</label
-        >
-      </div>
-
-      <div class="form-group">
-        <label for="bills[details]">Bill Details</label>
-        <input
-          type="text"
-          name="listing[bills][details]"
-          class="form-control"
-          placeholder="E.g., Water & Electricity included"
-        />
-      </div>
-
-      <button type="submit" class="airbnb-submit-btn">Create listing</button>
-    </form>
-  </div>
-</div>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector('form[action="/listings"]');
-    const submitButton = form?.querySelector('button[type="submit"]');
-
-    if (!form || !submitButton) return;
-
-    form.addEventListener("submit", function () {
-      if (!form.checkValidity()) return;
-      if (submitButton.disabled) return;
-
-      submitButton.disabled = true;
-      submitButton.textContent = "Creating...";
-    });
-  });
-</script>
+    <button type="submit" class="w-full rounded-xl bg-rose-600 px-5 py-3 text-sm font-semibold text-white hover:bg-rose-700">Create Listing</button>
+  </form>
+</section>

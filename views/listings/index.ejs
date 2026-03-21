@@ -1,526 +1,105 @@
 <% layout("/layouts/boilerplate") %>
-
-<link rel="stylesheet" href="/css/style.css" />
-<style>
-  /* 5-Star Badge Styles */
-  .five-star-badge {
-    position: absolute;
-    top: 15px;
-    left: 15px;
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 24px;
-    font-size: 13px;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 10;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .five-star-badge:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-  }
-  
-  .five-star-badge i {
-    color: #FFD700;
-    font-size: 14px;
-    text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
-  }
-  
-  .five-star-badge::before {
-    content: '';
-    position: absolute;
-    top: -1px;
-    left: -1px;
-    right: -1px;
-    bottom: -1px;
-    border-radius: 24px;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 140, 0, 0.3));
-    z-index: -1;
-    opacity: 0.7;
-  }
-  
-  .five-star-badge::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    pointer-events: none;
-  }
-  
-  /* Ensure the badge is visible on top of the image */
-  .image-carousel {
-    position: relative;
-  }
-  
-  /* Adjust favorite button position when badge is present */
-  .favorite-btn {
-    z-index: 11; /* Ensure it's above the badge */
-  }
-</style>
-<div class="listings-container px-3 sm:px-4 lg:px-6">
-  <div class="filters-bar flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-    <div class="category-filters w-full">
-      <div class="filter-scroll items-start md:items-center">
-        <button class="filter-btn active min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="all">
-          <i class="fas fa-bed"></i>
-          <span>All Rooms</span>
-        </button>
-        <% if (currentUser) { %>
-        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="favorites">
-          <i class="fas fa-heart"></i>
-          <span>My Favorites</span>
-        </button>
-        <% } %>
-        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="single">
-          <i class="fas fa-user"></i>
-          <span>Single</span>
-        </button>
-        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="shared">
-          <i class="fas fa-users"></i>
-          <span>Shared</span>
-        </button>
-        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="furnished">
-          <i class="fas fa-couch"></i>
-          <span>Furnished</span>
-        </button>
-        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="students">
-          <i class="fas fa-graduation-cap"></i>
-          <span>For Students</span>
-        </button>
-        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="professionals">
-          <i class="fas fa-briefcase"></i>
-          <span>For Professionals</span>
-        </button>
-        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="any-gender">
-          <i class="fas fa-venus-mars"></i>
-          <span>Any Gender</span>
-        </button>
-        <button class="filter-btn min-w-[92px] rounded-lg px-2 py-2 text-[11px] sm:text-xs" data-filter="immediate">
-          <i class="fas fa-calendar-check"></i>
-          <span>Immediate</span>
-        </button>
-      </div>
+<section class="space-y-6">
+  <div class="rounded-2xl bg-white p-4 shadow-soft">
+    <div class="flex flex-wrap items-center gap-2">
+      <button class="filter-btn active rounded-full border border-slate-300 px-4 py-2 text-sm font-medium" data-filter="all"><i class="fas fa-bed mr-1"></i><span>All Rooms</span></button>
+      <% if (currentUser) { %><button class="filter-btn rounded-full border border-slate-300 px-4 py-2 text-sm font-medium" data-filter="favorites"><i class="fas fa-heart mr-1"></i><span>My Favorites</span></button><% } %>
+      <button class="filter-btn rounded-full border border-slate-300 px-4 py-2 text-sm font-medium" data-filter="single"><i class="fas fa-user mr-1"></i><span>Single</span></button>
+      <button class="filter-btn rounded-full border border-slate-300 px-4 py-2 text-sm font-medium" data-filter="shared"><i class="fas fa-users mr-1"></i><span>Shared</span></button>
+      <button class="filter-btn rounded-full border border-slate-300 px-4 py-2 text-sm font-medium" data-filter="furnished"><i class="fas fa-couch mr-1"></i><span>Furnished</span></button>
+      <button class="filter-btn rounded-full border border-slate-300 px-4 py-2 text-sm font-medium" data-filter="students"><i class="fas fa-graduation-cap mr-1"></i><span>For Students</span></button>
+      <button class="filter-btn rounded-full border border-slate-300 px-4 py-2 text-sm font-medium" data-filter="professionals"><i class="fas fa-briefcase mr-1"></i><span>For Professionals</span></button>
+      <button class="filter-btn rounded-full border border-slate-300 px-4 py-2 text-sm font-medium" data-filter="any-gender"><i class="fas fa-venus-mars mr-1"></i><span>Any Gender</span></button>
+      <button class="filter-btn rounded-full border border-slate-300 px-4 py-2 text-sm font-medium" data-filter="immediate"><i class="fas fa-calendar-check mr-1"></i><span>Immediate</span></button>
+      <button id="advanced-filters-btn" class="ml-auto rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">More Filters</button>
     </div>
-    <div class="filter-options w-full justify-between md:w-auto md:justify-end">
-      <button class="show-filters-btn rounded-xl !px-4 !py-2 text-sm font-medium" id="advanced-filters-btn">
-        <i class="fas fa-sliders-h"></i>
-        <span>More Filters</span>
-      </button>
-      <div class="price-toggle">
-        <div class="tax-toggle-container">
-          <span class="tax-toggle-label">Display total before taxes</span>
-          <label class="tax-switch">
-            <input type="checkbox" id="tax-toggle" />
-            <span class="tax-slider"></span>
-          </label>
+  </div>
+
+  <div id="advanced-filters-modal" class="advanced-filters-modal fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 p-4">
+    <div class="advanced-filters-content w-full max-w-2xl rounded-2xl bg-white p-6 shadow-soft">
+      <div class="mb-4 flex items-center justify-between"><h3 class="text-lg font-bold">Advanced Filters</h3><button class="close-modal-btn rounded-lg border px-3 py-1">�</button></div>
+      <form id="advanced-filter-form" class="space-y-4 text-sm">
+        <div class="grid gap-2 sm:grid-cols-3">
+          <label><input type="checkbox" name="roomType" value="single" class="mr-2" />Single</label>
+          <label><input type="checkbox" name="roomType" value="shared" class="mr-2" />Shared</label>
+          <label><input type="checkbox" name="roomType" value="studio" class="mr-2" />Studio</label>
         </div>
-      </div>
+        <div class="grid gap-2 sm:grid-cols-3">
+          <label><input type="checkbox" name="furnished" value="furnished" class="mr-2" />Furnished</label>
+          <label><input type="checkbox" name="furnished" value="unfurnished" class="mr-2" />Unfurnished</label>
+          <label><input type="checkbox" name="furnished" value="semifurnished" class="mr-2" />Semi-furnished</label>
+        </div>
+        <div class="grid gap-2 sm:grid-cols-3">
+          <label><input type="checkbox" name="gender" value="male" class="mr-2" />Male</label>
+          <label><input type="checkbox" name="gender" value="female" class="mr-2" />Female</label>
+          <label><input type="checkbox" name="gender" value="any" class="mr-2" />Any</label>
+        </div>
+        <div class="grid gap-2 sm:grid-cols-3">
+          <input type="range" id="min-price" min="1000" max="50000" step="500" value="1000" />
+          <input type="range" id="max-price" min="1000" max="50000" step="500" value="50000" />
+          <div class="grid grid-cols-2 gap-2"><input id="min-price-input" type="number" value="1000" class="rounded-lg border px-2 py-1" /><input id="max-price-input" type="number" value="50000" class="rounded-lg border px-2 py-1" /></div>
+        </div>
+        <div class="grid gap-2 sm:grid-cols-3">
+          <select name="location" class="rounded-lg border px-3 py-2"><option value="">All Locations</option><option value="central">Central Area</option><option value="north">North Area</option><option value="south">South Area</option><option value="east">East Area</option><option value="west">West Area</option></select>
+          <label><input type="radio" name="availability" value="immediate" class="mr-2" />Immediate</label>
+          <label><input type="radio" name="availability" value="any" checked class="mr-2" />Any</label>
+        </div>
+        <div id="specific-date-container" class="hidden"><input type="date" id="available-from" name="availableFrom" class="rounded-lg border px-3 py-2" /></div>
+        <div class="grid gap-2 sm:grid-cols-3">
+          <label><input type="checkbox" name="amenities" value="wifi" class="mr-2" />WiFi</label>
+          <label><input type="checkbox" name="amenities" value="ac" class="mr-2" />AC</label>
+          <label><input type="checkbox" name="amenities" value="parking" class="mr-2" />Parking</label>
+        </div>
+        <div class="flex justify-end gap-2"><button type="button" class="reset-btn rounded-lg border px-4 py-2">Reset</button><button type="submit" class="apply-btn rounded-lg bg-rose-600 px-4 py-2 font-semibold text-white">Apply</button></div>
+      </form>
     </div>
   </div>
 
-  <!-- Advanced Filters Modal -->
-  <div class="advanced-filters-modal" id="advanced-filters-modal">
-    <div class="advanced-filters-content">
-      <div class="modal-header">
-        <h3>Filter Rooms</h3>
-        <button class="close-modal-btn">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form id="advanced-filter-form">
-          <div class="filter-section">
-            <h4>Room Type</h4>
-            <div class="checkbox-group">
-              <label
-                ><input type="checkbox" name="roomType" value="single" />
-                Single</label
-              >
-              <label
-                ><input type="checkbox" name="roomType" value="shared" />
-                Shared</label
-              >
-              <label
-                ><input type="checkbox" name="roomType" value="studio" />
-                Studio</label
-              >
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <h4>Furnished Status</h4>
-            <div class="checkbox-group">
-              <label
-                ><input type="checkbox" name="furnished" value="furnished" />
-                Furnished</label
-              >
-              <label
-                ><input type="checkbox" name="furnished" value="unfurnished" />
-                Unfurnished</label
-              >
-              <label
-                ><input
-                  type="checkbox"
-                  name="furnished"
-                  value="semifurnished"
-                />
-                Semi-furnished</label
-              >
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <h4>Gender Preference</h4>
-            <div class="checkbox-group">
-              <label
-                ><input type="checkbox" name="gender" value="male" /> Male
-                Only</label
-              >
-              <label
-                ><input type="checkbox" name="gender" value="female" /> Female
-                Only</label
-              >
-              <label
-                ><input type="checkbox" name="gender" value="any" /> Any</label
-              >
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <h4>Preferred Tenants</h4>
-            <div class="checkbox-group">
-              <label
-                ><input type="checkbox" name="tenants" value="students" />
-                Students</label
-              >
-              <label
-                ><input type="checkbox" name="tenants" value="professionals" />
-                Working Professionals</label
-              >
-              <label
-                ><input type="checkbox" name="tenants" value="family" />
-                Family</label
-              >
-              <label
-                ><input type="checkbox" name="tenants" value="couples" />
-                Couples</label
-              >
-              <label
-                ><input type="checkbox" name="tenants" value="any" /> Any</label
-              >
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <h4>Monthly Rent Range</h4>
-            <div class="range-slider">
-              <input
-                type="range"
-                id="min-price"
-                min="1000"
-                max="50000"
-                step="500"
-                value="1000"
-              />
-              <input
-                type="range"
-                id="max-price"
-                min="1000"
-                max="50000"
-                step="500"
-                value="50000"
-              />
-              <div class="price-inputs">
-                <div>
-                  <label for="min-price-input">Min ₹</label>
-                  <input
-                    type="number"
-                    id="min-price-input"
-                    min="1000"
-                    max="50000"
-                    value="1000"
-                  />
-                </div>
-                <div>
-                  <label for="max-price-input">Max ₹</label>
-                  <input
-                    type="number"
-                    id="max-price-input"
-                    min="1000"
-                    max="50000"
-                    value="50000"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <h4>Location</h4>
-            <select name="location" class="location-select">
-              <option value="">All Locations</option>
-              <!-- Populate with locations from your database -->
-              <option value="central">Central Area</option>
-              <option value="north">North Area</option>
-              <option value="south">South Area</option>
-              <option value="east">East Area</option>
-              <option value="west">West Area</option>
-            </select>
-          </div>
-
-          <div class="filter-section">
-            <h4>Availability</h4>
-            <div class="radio-group">
-              <label
-                ><input type="radio" name="availability" value="immediate" />
-                Immediate</label
-              >
-              <label
-                ><input type="radio" name="availability" value="specific" />
-                Specific Date</label
-              >
-              <label
-                ><input type="radio" name="availability" value="any" checked />
-                Any</label
-              >
-            </div>
-            <div
-              class="date-picker"
-              id="specific-date-container"
-              style="display: none"
-            >
-              <label for="available-from">Available From:</label>
-              <input type="date" id="available-from" name="availableFrom" />
-            </div>
-          </div>
-
-          <div class="filter-section">
-            <h4>Amenities</h4>
-            <div class="checkbox-group amenities-group">
-              <label
-                ><input
-                  type="checkbox"
-                  name="amenities"
-                  value="attached-bathroom"
-                />
-                Attached Bathroom</label
-              >
-              <label
-                ><input
-                  type="checkbox"
-                  name="amenities"
-                  value="kitchen-access"
-                />
-                Kitchen Access</label
-              >
-              <label
-                ><input type="checkbox" name="amenities" value="wifi" />
-                WiFi</label
-              >
-              <label
-                ><input type="checkbox" name="amenities" value="ac" /> Air
-                Conditioning</label
-              >
-              <label
-                ><input type="checkbox" name="amenities" value="laundry" />
-                Laundry</label
-              >
-              <label
-                ><input type="checkbox" name="amenities" value="parking" />
-                Parking</label
-              >
-            </div>
-          </div>
-
-          <div class="filter-buttons">
-            <button type="button" class="reset-btn rounded-lg px-4 py-2 text-sm font-semibold">Reset All</button>
-            <button type="submit" class="apply-btn rounded-lg px-4 py-2 text-sm font-semibold">Apply Filters</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div class="row listings-grid !mx-0 !grid !grid-cols-1 sm:!grid-cols-2 xl:!grid-cols-3 !gap-4 sm:!gap-5">
+  <div class="listings-grid grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
     <% for(let listing of allListings) { %>
-    <div
-      class="col-lg-4 col-md-6 col-sm-12 listing-col !w-full !max-w-full !px-0 flex flex-col"
-      data-listing-id="<%= listing._id %>"
-      data-is-favorite="<%= listing.isFavorite || false %>"
-      data-room-type="<%= listing.roomType || 'single' %>"
-      data-furnished="<%= listing.furnished || 'furnished' %>"
-      data-gender="<%= listing.genderPreference || 'any' %>"
-      data-tenants="<%= listing.preferredTenants || 'any' %>"
-      data-price="<%= listing.price %>"
-      data-location="<%= listing.location || '' %>"
-      data-availability="<%= listing.immediateAvailability ? 'immediate' : 'later' %>"
-      data-available-from="<%= listing.availableFrom || '' %>"
-    >
-      <a href="/listings/<%= listing._id %>" class="listing-link flex-grow-1 d-flex h-full flex-column">
-        <div class="listing-card !h-auto h-full flex flex-col overflow-hidden rounded-xl">
-          <div class="image-carousel !h-56 sm:!h-64 lg:!h-72">
-            <div class="carousel-inner">
-              <!-- Main image -->
-              <img
-                src="<%= listing.image.url %>"
-                class="carousel-img active !h-56 sm:!h-64 lg:!h-72"
-                alt="<%= listing.title %>"
-              />
-
-              <!-- Additional images if available -->
-              <% if(listing.images && listing.images.length > 0) { %> <%
-              listing.images.forEach((img, index) => { %>
-              <img
-                src="<%= img.url %>"
-                class="carousel-img !h-56 sm:!h-64 lg:!h-72"
-                alt="<%= listing.title %> - image <%= index + 2 %>"
-              />
-              <% }) %> <% } %>
+    <% let avgRating = 3; if (listing.reviews && listing.reviews.length > 0) { const totalRating = listing.reviews.reduce((sum, review) => sum + (review.rating || 0), 0); avgRating = totalRating / listing.reviews.length; } %>
+    <div class="listing-col" data-listing-id="<%= listing._id %>" data-is-favorite="<%= listing.isFavorite || false %>" data-room-type="<%= listing.roomType || 'single' %>" data-furnished="<%= listing.furnished || 'furnished' %>" data-gender="<%= listing.genderPreference || 'any' %>" data-tenants="<%= listing.preferredTenants || 'any' %>" data-price="<%= listing.price %>" data-location="<%= listing.location || '' %>" data-availability="<%= listing.immediateAvailability ? 'immediate' : 'later' %>" data-available-from="<%= listing.availableFrom || '' %>">
+      <a href="/listings/<%= listing._id %>" class="block h-full">
+        <article class="listing-card h-full overflow-hidden rounded-2xl bg-white shadow-soft transition hover:-translate-y-1">
+          <div class="image-carousel relative h-56">
+            <div class="carousel-inner h-full">
+              <img src="<%= listing.image.url %>" class="carousel-img active h-56 w-full object-cover" alt="<%= listing.title %>" />
+              <% if(listing.images && listing.images.length > 0) { listing.images.forEach((img) => { %>
+              <img src="<%= img.url %>" class="carousel-img h-56 w-full object-cover" alt="<%= listing.title %>" />
+              <% }) } %>
             </div>
-
-            <!-- Carousel Navigation Dots -->
-            <div class="carousel-dots">
-              <span class="dot active" data-index="0"></span>
-              <% if(listing.images && listing.images.length > 0) { %> <%
-              listing.images.forEach((img, index) => { %>
-              <span class="dot" data-index="<%= index + 1 %>"></span>
-              <% }) %> <% } %>
+            <div class="carousel-dots absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1">
+              <span class="dot active h-2 w-2 rounded-full bg-white/90" data-index="0"></span>
+              <% if(listing.images && listing.images.length > 0) { listing.images.forEach((img, index) => { %><span class="dot h-2 w-2 rounded-full bg-white/50" data-index="<%= index + 1 %>"></span><% }) } %>
             </div>
-
-            <!-- Carousel Controls -->
-            <div class="carousel-controls">
-              <button class="carousel-control prev" aria-label="Previous image">
-                <i class="fas fa-chevron-left"></i>
-              </button>
-              <button class="carousel-control next" aria-label="Next image">
-                <i class="fas fa-chevron-right"></i>
-              </button>
+            <div class="carousel-controls pointer-events-none absolute inset-0 flex items-center justify-between px-2">
+              <button class="carousel-control prev pointer-events-auto rounded-full bg-white/90 px-2 py-1"><i class="fas fa-chevron-left"></i></button>
+              <button class="carousel-control next pointer-events-auto rounded-full bg-white/90 px-2 py-1"><i class="fas fa-chevron-right"></i></button>
             </div>
-
-            <!-- 5-Star Badge and Favorite Button -->
-            <% 
-              let avgRating = 3; // Default rating
-              if (listing.reviews && listing.reviews.length > 0) {
-                const totalRating = listing.reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
-                avgRating = totalRating / listing.reviews.length;
-              }
-              const isFiveStar = avgRating >= 5.0;
-              
-              if (isFiveStar) { 
-            %>
-            <div class="five-star-badge" title="Top Rated - Perfect 5.0">
-              <i class="fas fa-star"></i>
-              <span>Top Rated</span>
-              <span class="rating-value">5.0</span>
-            </div>
-            <% } %>
-            <!-- End 5-Star Badge -->
-            <button
-              class="favorite-btn <%= listing.isFavorite ? 'active' : '' %>"
-              aria-label="Toggle favorites"
-              data-listing-id="<%= listing._id %>"
-            >
-              <i
-                class="<%= listing.isFavorite ? 'fas' : 'far' %> fa-heart"
-              ></i>
-            </button>
+            <button class="favorite-btn <%= listing.isFavorite ? 'active' : '' %> absolute right-3 top-3 rounded-full bg-white/90 p-2" aria-label="Toggle favorites" data-listing-id="<%= listing._id %>"><i class="<%= listing.isFavorite ? 'fas' : 'far' %> fa-heart text-rose-600"></i></button>
           </div>
-
-          <div class="listing-info p-3 d-flex flex-1 min-h-0 !h-auto flex-column">
-            <div class="listing-header">
-              <div class="listing-title-wrapper">
-                <h3 class="listing-title"><%= listing.title %></h3>
-                <div class="listing-rating">
-                  <i class="fas fa-star"></i>
-                  <span><%= avgRating.toFixed(1) %></span>
-                </div>
-              </div>
-              <p class="listing-location">
-                <%= listing.location || 'Beautiful location' %>
-              </p>
+          <div class="p-4">
+            <div class="mb-2 flex items-start justify-between gap-3">
+              <h3 class="line-clamp-1 text-base font-semibold"><%= listing.title %></h3>
+              <div class="listing-rating text-sm text-amber-500"><i class="fas fa-star"></i> <span><%= avgRating.toFixed(1) %></span></div>
             </div>
-
-            <div class="room-tags">
-              <% if(listing.roomType) { %>
-              <span class="tag room-type"><%= listing.roomType %></span>
-              <% } %> <% if(listing.furnished) { %>
-              <span class="tag furnished-status"><%= listing.furnished %></span>
-              <% } %> <% if(listing.genderPreference) { %>
-              <span class="tag gender"
-                ><%= listing.genderPreference %> only</span
-              >
-              <% } %>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <p class="listing-price mb-0">
-                <strong>₹<%= listing.price.toLocaleString("en-IN") %></strong> / month
-              </p>
-              <p class="listing-dates mb-0">
-                <% if(listing.immediateAvailability) { %>
-                <span class="availability immediate">Available Now</span>
-                <% } else { %>
-                <span class="availability soon">Available Soon</span>
-                <% } %>
-              </p>
-            </div>
-            <div class="owner-section pt-2 mt-2 border-top -mb-1">
-              <% if (listing.owner) { %>
-              <div class="d-flex align-items-center">
-                <img
-                  src="<%= listing.owner.image && listing.owner.image.url ? listing.owner.image.url : 'https://cdn.pixabay.com/photo/2018/11/13/22/01/avatar-3814081_1280.png' %>"
-                  alt="<%= listing.owner.username ? listing.owner.username : 'User' %>'s profile"
-                  class="me-2 h-7 w-7 rounded-full border border-slate-100 object-cover sm:h-8 sm:w-8"
-                />
-                <div class="d-flex flex-column">
-                  <div class="d-flex align-items-center">
-                    <span class="small fw-medium text-dark">Hosted by <%= listing.owner.username %></span>
-                    <span class="verified-badge ms-1 !h-3.5 !w-3.5" title="Verified User">
-                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="h-2 w-2">
-                        <path d="M19.3 5.3L9 15.6l-4.3-4.3-1.4 1.4 5.7 5.7 11.7-11.7z" fill="#ffffff"/>
-                      </svg>
-                    </span>
-                  </div>
-                  <small class="text-muted">Verified Host</small>
-                </div>
-              </div>
-              <% } else { %>
-              <div class="d-flex align-items-center">
-                <img
-                  src="https://cdn.pixabay.com/photo/2018/11/13/22/01/avatar-3814081_1280.png"
-                  alt="User's profile"
-                  class="me-2 h-7 w-7 rounded-full border border-slate-100 object-cover sm:h-8 sm:w-8"
-                />
-                <div class="d-flex flex-column">
-                  <span class="small fw-medium text-dark">Hosted by User</span>
-                  <small class="text-muted">Verified Host</small>
-                </div>
-              </div>
-              <% } %>
+            <p class="text-sm text-slate-500"><%= listing.location || 'Great location' %></p>
+            <p class="listing-price mt-3 text-sm"><strong>?<%= listing.price.toLocaleString("en-IN") %></strong> / month</p>
+            <p class="mt-1 text-xs text-slate-500"><%= listing.immediateAvailability ? 'Available Now' : 'Available Soon' %></p>
+            <div class="mt-3 flex items-center gap-2 text-xs text-slate-500">
+              <img src="<%= listing.owner && listing.owner.image && listing.owner.image.url ? listing.owner.image.url : 'https://cdn.pixabay.com/photo/2018/11/13/22/01/avatar-3814081_1280.png' %>" class="h-7 w-7 rounded-full object-cover" alt="Host" />
+              <span>Hosted by <%= listing.owner && listing.owner.username ? listing.owner.username : 'User' %></span>
             </div>
           </div>
-        </div>
+        </article>
       </a>
     </div>
     <% } %>
   </div>
-
-  
-</div>
+</section>
 
 <script src="/init/data.js"></script>
+<script src="/js/room-filters.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const filterButtons = document.querySelectorAll('.filter-btn[data-filter]');
@@ -528,116 +107,30 @@
     window.listings = Array.from(document.querySelectorAll('.listing-col'));
     const listings = window.listings;
     let activeFilter = new URLSearchParams(window.location.search).get('filter') || 'all';
-
-    // Debug: Log all listings and their favorite status
-    console.log('=== Listings Debug Info ===');
-    console.log('Total listings found:', listings.length);
-    console.log('Initial active filter:', activeFilter);
-    
-    // Function to safely get boolean from data attribute
-    function getBooleanAttribute(element, attribute) {
-      const value = element.getAttribute(attribute);
-      return value === 'true' || value === '';
-    }
-
-    // Function to update the display of listings based on the active filter
+    function getBooleanAttribute(element, attribute) { const value = element.getAttribute(attribute); return value === 'true' || value === ''; }
     function updateListingsDisplay() {
-      // Update the global listings array to reflect current DOM state
-      window.listings = Array.from(document.querySelectorAll('.listing-col'));
-      console.log('\n--- Updating display ---');
-      console.log('Active filter:', activeFilter);
-      
       let visibleCount = 0;
-      
       listings.forEach(listing => {
-        const listingId = listing.getAttribute('data-listing-id');
         const isFavorite = getBooleanAttribute(listing, 'data-is-favorite');
-        
-        if (activeFilter === 'favorites') {
-          if (isFavorite) {
-            listing.style.display = 'block';
-            visibleCount++;
-            console.log(`✅ Showing favorite listing: ${listingId}`);
-          } else {
-            listing.style.display = 'none';
-          }
-        } else {
-          listing.style.display = 'block';
-          visibleCount++;
-        }
+        if (activeFilter === 'favorites') { listing.style.display = isFavorite ? 'block' : 'none'; if (isFavorite) visibleCount++; }
+        else { listing.style.display = 'block'; visibleCount++; }
       });
-      
-      console.log(`Total visible listings: ${visibleCount}/${listings.length}`);
-      
-      // If no favorites found and filter is active, show a message
-      if (activeFilter === 'favorites') {
-        const visibleListings = listings.filter(listing => 
-          getBooleanAttribute(listing, 'data-is-favorite')
-        );
-        
-        if (visibleListings.length === 0) {
-          const noResults = document.createElement('div');
-          noResults.className = 'col-12 text-center my-5';
-          noResults.innerHTML = `
-            <i class="fas fa-heart-broken fa-3x mb-3 text-rose-400"></i>
-            <h4>No favorite listings yet</h4>
-            <p class="text-muted">Save your favorite rooms to see them here</p>
-          `;
-          
-          // Remove any existing no-results message
-          const existingMessage = document.querySelector('.no-favorites-message');
-          if (existingMessage) existingMessage.remove();
-          
-          noResults.classList.add('no-favorites-message');
-          listingsGrid.appendChild(noResults);
-        } else {
-          const existingMessage = document.querySelector('.no-favorites-message');
-          if (existingMessage) existingMessage.remove();
-        }
-      } else {
-        const existingMessage = document.querySelector('.no-favorites-message');
-        if (existingMessage) existingMessage.remove();
-      }
+      if (activeFilter === 'favorites' && visibleCount === 0 && listingsGrid && !document.querySelector('.no-favorites-message')) {
+        const noResults = document.createElement('div');
+        noResults.className = 'no-favorites-message rounded-xl border border-slate-200 bg-white p-8 text-center text-slate-600';
+        noResults.innerHTML = '<i class="fas fa-heart-broken mb-3 text-3xl text-rose-400"></i><h4 class="font-semibold">No favorite listings yet</h4>';
+        listingsGrid.appendChild(noResults);
+      } else { const existingMessage = document.querySelector('.no-favorites-message'); if (existingMessage) existingMessage.remove(); }
     }
-
-    // Add event listener for filter updates from other scripts
     document.addEventListener('filterUpdated', updateListingsDisplay);
-
-    // Handle filter button clicks
-    filterButtons.forEach(button => {
-      button.addEventListener('click', function() {
-        // Update active filter
-        activeFilter = this.getAttribute('data-filter');
-        
-        // Update active state
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
-        
-        // Update URL without page reload
-        const url = new URL(window.location);
-        if (activeFilter === 'all') {
-          url.searchParams.delete('filter');
-        } else {
-          url.searchParams.set('filter', activeFilter);
-        }
-        window.history.pushState({}, '', url);
-        
-        // Update listings display
-        updateListingsDisplay();
-      });
-    });
-
-    // Check for filter in URL on page load
-    const urlParams = new URLSearchParams(window.location.search);
-    const filterFromUrl = urlParams.get('filter');
-    
-    if (filterFromUrl === 'favorites') {
-      const favoritesBtn = document.querySelector('.filter-btn[data-filter="favorites"]');
-      if (favoritesBtn) {
-        favoritesBtn.click();
-      }
+    filterButtons.forEach(button => button.addEventListener('click', function() {
+      activeFilter = this.getAttribute('data-filter');
+      filterButtons.forEach(btn => btn.classList.remove('active')); this.classList.add('active');
+      const url = new URL(window.location); if (activeFilter === 'all') url.searchParams.delete('filter'); else url.searchParams.set('filter', activeFilter);
+      window.history.pushState({}, '', url); updateListingsDisplay();
+    }));
+    if (new URLSearchParams(window.location.search).get('filter') === 'favorites') {
+      const favoritesBtn = document.querySelector('.filter-btn[data-filter="favorites"]'); if (favoritesBtn) favoritesBtn.click();
     }
   });
 </script>
-<script src="/js/room-filters.js"></script>
-<script src="/js/script.js"></script>

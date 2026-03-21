@@ -1,50 +1,21 @@
 <%- layout("/layouts/boilerplate") %>
-<div class="auth-container">
-  <div class="auth-form-container">
-    <div class="auth-header">
-      <h2>Verify Your Email</h2>
-      <p>We've sent a 6-digit verification code to <strong><%= email %></strong></p>
-      <p class="text-muted">Please check your email and enter the code below</p>
+<section class="mx-auto max-w-md rounded-2xl bg-white p-6 shadow-soft sm:p-8">
+  <h1 class="text-2xl font-bold">Verify Email</h1>
+  <p class="mt-2 text-sm text-slate-600">Code sent to <strong><%= email %></strong></p>
+
+  <form id="otpForm" class="mt-6 space-y-4">
+    <input type="hidden" name="email" value="<%= email %>">
+    <input type="hidden" name="isPasswordReset" value="<%= isPasswordReset || false %>">
+    <div>
+      <label for="otp" class="mb-1 block text-sm font-semibold">Verification Code</label>
+      <input type="text" name="otp" id="otp" maxlength="6" pattern="\d{6}" inputmode="numeric" autocomplete="one-time-code" required class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-center tracking-[0.35em]" />
+      <div class="mt-2 text-xs"><a href="#" id="resendOtp" class="font-semibold text-rose-700">Resend Code</a> <span id="resendTimer" class="text-slate-500"></span></div>
     </div>
-
-    <form id="otpForm" class="airbnb-form">
-      <input type="hidden" name="email" value="<%= email %>">
-      <input type="hidden" name="isPasswordReset" value="<%= isPasswordReset || false %>">
-      
-      <div class="form-group">
-        <label for="otp">Verification Code</label>
-        <div class="otp-input-container">
-          <input 
-            type="text" 
-            name="otp" 
-            id="otp" 
-            class="form-control text-center otp-input" 
-            maxlength="6"
-            pattern="\d{6}"
-            inputmode="numeric"
-            autocomplete="one-time-code"
-            required
-          />
-        </div>
-        <div class="text-center mt-2">
-          <a href="#" id="resendOtp" class="text-primary">Resend Code</a>
-          <span id="resendTimer" class="text-muted ms-2">(2:00)</span>
-        </div>
-      </div>
-
-      <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
-      
-      <button type="submit" class="airbnb-submit-btn w-100">
-        <span class="spinner-border spinner-border-sm d-none" id="otpSpinner" role="status" aria-hidden="true"></span>
-        <span id="otpButtonText">Verify & Continue</span>
-      </button>
-      
-      <div class="text-center mt-3">
-        <a href="/login" class="text-muted">Back to Login</a>
-      </div>
-    </form>
-  </div>
-</div>
+    <div id="errorMessage" class="hidden rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700"></div>
+    <button type="submit" class="w-full rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white"><span id="otpSpinner" class="hidden">...</span> <span id="otpButtonText">Verify & Continue</span></button>
+    <a href="/login" class="block text-center text-sm text-slate-600">Back to Login</a>
+  </form>
+</section>
 
 <script src="/js/email-service.js"></script>
 <script>
@@ -56,229 +27,41 @@
     const errorMessage = document.getElementById('errorMessage');
     const otpSpinner = document.getElementById('otpSpinner');
     const otpButtonText = document.getElementById('otpButtonText');
-    
-    let countdown = 120; // 2 minutes in seconds
-    let countdownInterval;
-    
-    // Format time as MM:SS
-    function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${mins}:${secs.toString().padStart(2, '0')}`;
-    }
-    
-    // Start the countdown
-    function startCountdown() {
-      clearInterval(countdownInterval);
-      countdown = 120;
-      updateResendButton();
-      
-      countdownInterval = setInterval(() => {
-        countdown--;
-        updateResendButton();
-        
-        if (countdown <= 0) {
-          clearInterval(countdownInterval);
-        }
-      }, 1000);
-    }
-    
-    // Update the resend button state
-    function updateResendButton() {
-      if (countdown > 0) {
-        resendLink.classList.add('disabled');
-        resendLink.style.pointerEvents = 'none';
-        resendTimer.textContent = `(${formatTime(countdown)})`;
-      } else {
-        resendLink.classList.remove('disabled');
-        resendLink.style.pointerEvents = 'auto';
-        resendTimer.textContent = '';
-      }
-    }
-    
-    // Handle OTP form submission
-    otpForm.addEventListener('submit', async function(e) {
+    let countdown = 120; let countdownInterval;
+    function formatTime(seconds) { const mins = Math.floor(seconds / 60); const secs = seconds % 60; return `${mins}:${secs.toString().padStart(2, '0')}`; }
+    function updateResendButton(){ if (countdown > 0) { resendLink.style.pointerEvents='none'; resendLink.classList.add('opacity-50'); resendTimer.textContent=`(${formatTime(countdown)})`; } else { resendLink.style.pointerEvents='auto'; resendLink.classList.remove('opacity-50'); resendTimer.textContent=''; }}
+    function startCountdown(){ clearInterval(countdownInterval); countdown = 120; updateResendButton(); countdownInterval = setInterval(()=>{ countdown--; updateResendButton(); if (countdown <= 0) clearInterval(countdownInterval); }, 1000); }
+    function showError(message){ errorMessage.textContent = message; errorMessage.classList.remove('hidden'); setTimeout(()=>errorMessage.classList.add('hidden'), 3500); }
+
+    otpForm.addEventListener('submit', async function(e){
       e.preventDefault();
-      
       const formData = new FormData(otpForm);
       const email = formData.get('email');
       const otp = formData.get('otp');
       const isPasswordReset = formData.get('isPasswordReset') === 'true';
-      
-      // Show loading state
-      otpSpinner.classList.remove('d-none');
-      otpButtonText.textContent = 'Verifying...';
-      
+      otpSpinner.classList.remove('hidden'); otpButtonText.textContent='Verifying...';
       try {
-        // Verify OTP
-        const verification = await fetch('/auth/verify-otp', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email, otp, isPasswordReset })
-        });
-        
+        const verification = await fetch('/auth/verify-otp', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, otp, isPasswordReset }) });
         const result = await verification.json();
-        
-        if (result.success) {
-          if (isPasswordReset) {
-            // Redirect to password reset page
-            window.location.href = `/reset-password?token=${encodeURIComponent(result.resetToken || result.token)}`;
-          } else {
-            // Continue with login
-            window.location.href = result.redirectTo || '/listings';
-          }
-        } else {
-          showError(result.message || 'Invalid verification code. Please try again.');
-        }
-      } catch (error) {
-        console.error('Verification error:', error);
-        showError('An error occurred. Please try again.');
-      } finally {
-        // Reset loading state
-        otpSpinner.classList.add('d-none');
-        otpButtonText.textContent = 'Verify & Continue';
-      }
+        if (!result.success) return showError(result.message || 'Invalid verification code');
+        if (isPasswordReset) window.location.href = `/reset-password?token=${encodeURIComponent(result.resetToken || result.token)}`;
+        else window.location.href = result.redirectTo || '/listings';
+      } catch { showError('Verification failed.'); }
+      finally { otpSpinner.classList.add('hidden'); otpButtonText.textContent='Verify & Continue'; }
     });
-    
-    // Handle resend OTP
-    resendLink.addEventListener('click', async function(e) {
-      e.preventDefault();
-      if (countdown > 0) return;
+
+    resendLink.addEventListener('click', async function(e){
+      e.preventDefault(); if (countdown > 0) return;
       const email = document.querySelector('input[name="email"]').value;
       const isPasswordReset = document.querySelector('input[name="isPasswordReset"]').value === 'true';
       try {
-        const response = await fetch('/auth/resend-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, purpose: isPasswordReset ? 'reset' : 'login' })
-        });
-        const result = await response.json();
-        if (result.success) {
-          startCountdown();
-          showSuccess('A new verification code has been sent to your email.');
-        } else {
-          showError(result.message || 'Failed to resend verification code. Please try again.');
-        }
-      } catch (error) {
-        console.error('Resend OTP error:', error);
-        showError('An error occurred. Please try again.');
-      }
+        const response = await fetch('/auth/resend-otp', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, purpose: isPasswordReset ? 'reset' : 'login' }) });
+        const result = await response.json(); if (!result.success) return showError(result.message || 'Failed to resend code');
+        startCountdown();
+      } catch { showError('Failed to resend code.'); }
     });
-    
-    // Auto-advance OTP input
-    otpInput.addEventListener('input', function() {
-      this.value = this.value.replace(/[^0-9]/g, '');
-      
-      if (this.value.length === 6) {
-        otpForm.dispatchEvent(new Event('submit'));
-      }
-    });
-    
-    // Helper functions
-    function showError(message) {
-      errorMessage.textContent = message;
-      errorMessage.classList.remove('d-none');
-      setTimeout(() => {
-        errorMessage.classList.add('d-none');
-      }, 5000);
-    }
-    
-    function showSuccess(message) {
-      const successDiv = document.createElement('div');
-      successDiv.className = 'alert alert-success';
-      successDiv.textContent = message;
-      otpForm.insertBefore(successDiv, otpForm.firstChild);
-      
-      setTimeout(() => {
-        successDiv.remove();
-      }, 5000);
-    }
-    
-    // Initialize
+
+    otpInput.addEventListener('input', function(){ this.value = this.value.replace(/[^0-9]/g, ''); });
     startCountdown();
   });
 </script>
-
-<style>
-  .otp-input-container {
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-  }
-  
-  .otp-input {
-    font-size: 24px;
-    letter-spacing: 8px;
-    width: 200px;
-    text-align: center;
-    padding: 10px;
-  }
-  
-  #resendOtp {
-    text-decoration: none;
-  }
-  
-  #resendOtp.disabled {
-    color: #6c757d;
-    cursor: not-allowed;
-    text-decoration: none;
-  }
-  
-  .auth-form-container {
-    max-width: 450px;
-    margin: 0 auto;
-    padding: 30px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  
-  .auth-header {
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  
-  .auth-header h2 {
-    margin-bottom: 10px;
-    color: #222;
-    font-weight: 600;
-  }
-  
-  .auth-header p {
-    color: #666;
-    margin-bottom: 5px;
-  }
-  
-  .text-muted {
-    color: #6c757d !important;
-  }
-  
-  .text-primary {
-    color: #007bff !important;
-  }
-  
-  .alert {
-    border-radius: 8px;
-    margin-bottom: 20px;
-    padding: 12px 20px;
-    font-size: 14px;
-  }
-  
-  .alert-danger {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
-  }
-  
-  .alert-success {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
-  }
-  
-  .spinner-border {
-    margin-right: 8px;
-  }
-</style>

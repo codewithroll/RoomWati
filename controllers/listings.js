@@ -165,6 +165,11 @@ module.exports.showListing = async (req, res) => {
 };
 
 module.exports.createListing = async (req, res) => {
+  if (!req.user) {
+    req.flash("error", "Please login to continue");
+    return res.redirect("/login");
+  }
+
   const imageData = getImageData(req.file);
   const listingData = normalizeListingData(req.body.listing);
 
